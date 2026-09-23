@@ -55,7 +55,6 @@ Tout se règle dans `src/data/site.ts` (chercher `TODO`) :
 3. `SITE_URL` (par défaut `https://www.ragotpro.fr`, le domaine affiché sur le camion) et `PUBLIC_FORM_ENDPOINT` (service de réception du formulaire).
 4. Photos étanchéité : les déposer dans `src/assets/photos/` et les brancher sur
    `etancheite-toit-terrasse.astro` (voir le commentaire TODO).
-5. Mentions légales : hébergeur.
 6. Faire relire les FAQ par le client (fréquences, conseils).
 7. Après la mise en ligne : créer la fiche **Google Business Profile** avec les mêmes nom, adresse
    et téléphone que le site, l'ajouter dans `sameAs`, puis soumettre le sitemap dans Google Search Console.

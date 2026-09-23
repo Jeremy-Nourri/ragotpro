@@ -1,0 +1,12 @@
+{
+  // Site 100 % statique : Cloudflare sert le dossier dist/ généré par `pnpm run build`.
+  "name": "ragotpro",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    // URLs en /page/ (comme trailingSlash: "always" dans astro.config.mjs).
+    "html_handling": "auto-trailing-slash",
+    // Page 404 personnalisée (dist/404.html).
+    "not_found_handling": "404-page"
+  }
+}

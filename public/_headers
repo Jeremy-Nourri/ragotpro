@@ -1,0 +1,14 @@
+# En-têtes servis par Cloudflare (Workers Static Assets).
+
+# Fichiers générés par Astro : leur nom contient une empreinte, ils ne changent jamais.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/videos/*
+  Cache-Control: public, max-age=2592000
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
