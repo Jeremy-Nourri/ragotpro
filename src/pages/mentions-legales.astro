@@ -36,7 +36,8 @@ const address = [a.streetAddress, [a.postalCode, a.addressLocality].filter(Boole
           SIRET : {todo(site.siret, "SIRET")}<br />
           RCS : {site.rcs}<br />
           N° de TVA intracommunautaire : {site.vatNumber}<br />
-          Téléphone : <a href={site.phoneHref}>{site.phone}</a><br />
+          Téléphone : <a href={site.phoneHref}>{site.phone}</a> — Bureau : <a href={site.officePhoneHref}>{site.officePhone}</a><br />
+          Dépôt : {site.depot.streetAddress}, {site.depot.postalCode} {site.depot.addressLocality}<br />
           E-mail : {site.email ? <a href={`mailto:${site.email}`}>{site.email}</a> : "[E-mail — à compléter]"}
         </p>
       </section>

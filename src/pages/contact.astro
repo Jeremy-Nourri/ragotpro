@@ -17,6 +17,7 @@ const etapes = [
 
 const a = site.address;
 const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
+const d = site.depot;
 ---
 
 <BaseLayout
@@ -68,12 +69,28 @@ const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
           >
             {site.phone}
           </a>
+          <a
+            href={site.officePhoneHref}
+            class="btn btn-outline w-full flex-col gap-0.5 py-3 text-[clamp(17px,1.8vw,19px)]"
+            aria-label={`Appeler le bureau au ${site.officePhone}`}
+          >
+            <span class="font-sans text-[12.5px] font-semibold tracking-[0.12em] uppercase opacity-75">Contactez le bureau</span>
+            {site.officePhone}
+          </a>
           <span class="text-sm text-on-navy-2">{site.openingHours.label}</span>
         </div>
 
         <address class="card-sm gap-3 not-italic">
           <h2 class="font-display text-sm font-extrabold tracking-[0.04em] text-brand">COORDONNÉES</h2>
           <dl class="flex flex-col gap-3 text-[15.5px] leading-[1.45] text-ink-3">
+            <div>
+              <dt class="text-[13px] font-semibold text-muted">Portable</dt>
+              <dd><a href={site.phoneHref}>{site.phone}</a></dd>
+            </div>
+            <div>
+              <dt class="text-[13px] font-semibold text-muted">Bureau</dt>
+              <dd><a href={site.officePhoneHref}>{site.officePhone}</a></dd>
+            </div>
             {
               site.email && (
                 <div>
@@ -85,7 +102,7 @@ const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
             {
               (a.streetAddress || locality) && (
                 <div>
-                  <dt class="text-[13px] font-semibold text-muted">Adresse</dt>
+                  <dt class="text-[13px] font-semibold text-muted">Siège</dt>
                   <dd>
                     {a.streetAddress && <span class="block">{a.streetAddress}</span>}
                     {locality && <span class="block">{locality}</span>}
@@ -93,6 +110,17 @@ const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
                 </div>
               )
             }
+            <div>
+              <dt class="text-[13px] font-semibold text-muted">Dépôt</dt>
+              <dd>
+                <span class="block">{d.streetAddress}</span>
+                <span class="block">{d.postalCode} {d.addressLocality}</span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-[13px] font-semibold text-muted">SIRET</dt>
+              <dd>{site.siret}</dd>
+            </div>
             <div>
               <dt class="text-[13px] font-semibold text-muted">Zone d'intervention</dt>
               <dd class="first-letter:uppercase">{site.zone}</dd>

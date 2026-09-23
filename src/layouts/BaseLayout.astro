@@ -114,6 +114,8 @@ const jsonLd = JSON.stringify({ "@context": "https://schema.org", "@graph": grap
     <MobileCallBar />
     <script>
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Mobile / tablette : une colonne, écran court → on révèle élément par élément, plus tôt et plus vite.
+      const compact = window.matchMedia("(max-width: 1023px)").matches;
 
       // 1. Blocs apparaissant au défilement : titres de section, cartes, photos, questions, vidéos.
       //    Le hero (1re section) et les étapes (animation dédiée) sont exclus.
@@ -137,9 +139,8 @@ const jsonLd = JSON.stringify({ "@context": "https://schema.org", "@graph": grap
           );
       // Un élément déjà contenu dans un autre bloc animé suit son parent (pas de double animation).
       for (const el of srEls) {
-        const siblings = el.parentElement ? [...el.parentElement.children].filter((c) => srEls.includes(c as HTMLElement)) : [];
-        el.style.setProperty("--sr-i", String(Math.min(siblings.indexOf(el), 5)));
         el.classList.add("sr");
+        if (el.matches("figure, .card, .card-sm, form")) el.classList.add("sr-block");
         // Fin de l'apparition : on retire les classes pour rendre la main aux transitions d'origine (survol des cartes…).
         el.addEventListener(
           "transitionend",
@@ -153,21 +154,37 @@ const jsonLd = JSON.stringify({ "@context": "https://schema.org", "@graph": grap
         );
       }
 
-      // 2. Déclenchement : [data-reveal] (étapes) et .sr, une seule fois à l'entrée dans l'écran.
-      const targets = [...document.querySelectorAll("[data-reveal]"), ...srEls];
+      // 2. Déclenchement, une seule fois à l'entrée dans l'écran.
+      //    Étapes : la liste entière sur grand écran (animation en ligne), chaque étape sur mobile.
+      const stepTargets = reduceMotion
+        ? []
+        : compact
+          ? [...document.querySelectorAll("[data-reveal] > .step")]
+          : [...document.querySelectorAll("[data-reveal]")];
+      const targets = [...stepTargets, ...srEls];
       if ("IntersectionObserver" in window) {
         const io = new IntersectionObserver(
           (entries) => {
-            for (const e of entries) {
-              if (e.isIntersecting) {
-                e.target.classList.add("is-in");
-                io.unobserve(e.target);
-              }
+            // Cascade uniquement entre les éléments qui entrent ensemble (une ligne de grille),
+            // pas selon leur position dans la liste : un élément qui arrive seul n'attend jamais.
+            let batch = 0;
+            const entering = entries
+              .filter((e) => e.isIntersecting)
+              .sort(
+                (a, b) =>
+                  a.boundingClientRect.top - b.boundingClientRect.top ||
+                  a.boundingClientRect.left - b.boundingClientRect.left,
+              );
+            for (const e of entering) {
+              const el = e.target as HTMLElement;
+              if (el.classList.contains("sr")) el.style.setProperty("--sr-i", String(Math.min(batch++, 5)));
+              el.classList.add("is-in");
+              io.unobserve(el);
             }
           },
-          // Déclenche quand le haut de l'élément dépasse ~20 % du bas de l'écran :
+          // Déclenche quand le haut de l'élément est bien entré dans l'écran (20 % du bas, 12 % sur mobile) :
           // l'animation se joue sous les yeux du visiteur, pas en bordure d'écran.
-          { threshold: 0, rootMargin: "0px 0px -20% 0px" },
+          { threshold: 0, rootMargin: compact ? "0px 0px -12% 0px" : "0px 0px -20% 0px" },
         );
         targets.forEach((t) => io.observe(t));
 

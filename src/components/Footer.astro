@@ -11,6 +11,7 @@ const { showCta = true } = Astro.props;
 const year = new Date().getFullYear();
 const a = site.address;
 const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
+const d = site.depot;
 ---
 
 <!-- Appel à l'action + pied de page : un seul bloc au même fond, séparé par des filets. -->
@@ -75,16 +76,25 @@ const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
       <a href={site.phoneHref} class="w-max font-display text-xl font-bold text-white hover:text-white/80">
         {site.phone}
       </a>
+      <a href={site.officePhoneHref} class="w-max text-on-navy hover:text-white">
+        Bureau : <span class="font-display font-bold text-white">{site.officePhone}</span>
+      </a>
       {site.email && <a href={`mailto:${site.email}`} class="w-max text-on-navy hover:text-white">{site.email}</a>}
       <span>{site.openingHours.label}</span>
-      {a.streetAddress && <span>{a.streetAddress}</span>}
-      {locality && <span>{locality}</span>}
-      <span>Zone d'intervention : {site.zone}</span>
+      <span class="mt-1.5 flex flex-col">
+        <span class="text-[13px] font-semibold text-on-navy-2">Siège</span>
+        <span>{a.streetAddress}, {locality}</span>
+      </span>
+      <span class="flex flex-col">
+        <span class="text-[13px] font-semibold text-on-navy-2">Dépôt</span>
+        <span>{d.streetAddress}, {d.postalCode} {d.addressLocality}</span>
+      </span>
+      <span class="mt-1.5">Zone d'intervention : {site.zone}</span>
     </address>
   </div>
   <div class="wrap">
     <div class="flex flex-wrap justify-between gap-4 border-t border-white/10 py-[20px] text-[13px] text-on-navy-2">
-      <span>© {year} {site.name} — Garantie décennale</span>
+      <span>© {year} {site.name} — SIRET {site.siret} — Garantie décennale</span>
       <span class="flex flex-wrap gap-x-4 gap-y-1">
         <span>Devis et déplacement gratuits</span>
         <a href="/mentions-legales/" class="text-on-navy-2 underline-offset-2 hover:text-white hover:underline">

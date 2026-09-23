@@ -66,13 +66,23 @@ export function businessSchema(base: URL | string): Json {
       opens: site.openingHours.opens,
       closes: site.openingHours.closes,
     },
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: site.phoneE164,
-      contactType: "customer service",
-      areaServed: "FR",
-      availableLanguage: "French",
-    },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: site.phoneE164,
+        contactType: "customer service",
+        areaServed: "FR",
+        availableLanguage: "French",
+      },
+      {
+        "@type": "ContactPoint",
+        name: "Bureau",
+        telephone: site.officePhoneE164,
+        contactType: "customer service",
+        areaServed: "FR",
+        availableLanguage: "French",
+      },
+    ],
     knowsAbout: [
       "Couverture",
       "Réparation de toiture",

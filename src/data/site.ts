@@ -7,6 +7,9 @@
  */
 
 const phone = "06 41 88 54 49";
+/** Ligne fixe du bureau (renvoyée sur le portable) : rassure une partie de la clientèle. */
+const officePhone = "09 82 56 86 07";
+const e164 = (n: string) => "+33" + n.replace(/\D/g, "").replace(/^0/, "");
 
 export const site = {
   name: "RAGOT Couvreur Pro",
@@ -18,8 +21,11 @@ export const site = {
     "Artisan couvreur dans l'Oise : couverture, réparation et démoussage de toiture, zinguerie, façade et ravalement, isolation et étanchéité toit-terrasse. Garantie décennale, devis et déplacement gratuits.",
 
   phone,
-  phoneHref: "tel:+33" + phone.replace(/\D/g, "").replace(/^0/, ""),
-  phoneE164: "+33" + phone.replace(/\D/g, "").replace(/^0/, ""),
+  phoneHref: "tel:" + e164(phone),
+  phoneE164: e164(phone),
+  officePhone,
+  officePhoneHref: "tel:" + e164(officePhone),
+  officePhoneE164: e164(officePhone),
   email: "contact@ragotpro.fr",
 
   /** Zone d'intervention : libellé court (« Zone d'intervention : … ») et forme en phrase. */
@@ -38,15 +44,15 @@ export const site = {
     { name: "Cauffry", postalCode: "60290" },
     { name: "Rantigny", postalCode: "60290" },
     { name: "Mouy", postalCode: "60250" },
-    { name: "Foulangues", postalCode: "60250" },
-    { name: "Airion", postalCode: "60600" },
     { name: "Fitz-James", postalCode: "60600" },
-    { name: "Saint-Félix", postalCode: "60370" },
-    { name: "Ponchon", postalCode: "60430" },
     { name: "Milly-sur-Thérain", postalCode: "60112" },
     { name: "Saint-Just-en-Chaussée", postalCode: "60130" },
     { name: "Saint-Omer-en-Chaussée", postalCode: "60860" },
     { name: "Grandvilliers", postalCode: "60210" },
+    { name: "Clermont", postalCode: "60600" },
+    { name: "Tillé", postalCode: "60000" },
+    { name: "Senlis", postalCode: "60300" },
+    { name: "Bresles", postalCode: "60510" },
   ],
   /** Département desservi (en plus des communes). */
   region: "Oise",
@@ -57,6 +63,12 @@ export const site = {
     addressLocality: "Mogneville",
     addressRegion: "Hauts-de-France",
     addressCountry: "FR",
+  },
+  /** Dépôt (matériel et matériaux), affiché en plus du siège. */
+  depot: {
+    streetAddress: "2b rue du Château",
+    postalCode: "60860",
+    addressLocality: "Saint-Omer-en-Chaussée",
   },
   /** Coordonnées GPS du siège (améliore le SEO local). */
   geo: null as null | { latitude: number; longitude: number }, // TODO
