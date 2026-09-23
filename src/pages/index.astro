@@ -1,0 +1,303 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Photo from "@/components/Photo.astro";
+import GalleryFigure from "@/components/GalleryFigure.astro";
+import ServiceIcon from "@/components/ServiceIcon.astro";
+import VideoFeature from "@/components/VideoFeature.astro";
+import Reviews from "@/components/Reviews.astro";
+import ServiceArea from "@/components/ServiceArea.astro";
+import RelatedGuides from "@/components/RelatedGuides.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import Faq from "@/components/Faq.astro";
+import { site, services } from "@/data/site";
+import { faqSchema } from "@/data/schema";
+
+import photoHero from "@/assets/photos/photo-hero.jpg";
+import photoMaison from "@/assets/photos/photo-maison.jpg";
+import photoChaume from "@/assets/photos/photo-chaume-tuile.jpg";
+import photoPignon from "@/assets/photos/photo-pignon.jpg";
+import photoFaitage from "@/assets/photos/photo-faitage.jpg";
+import photoFacade from "@/assets/photos/photo-facade.jpg";
+import photoDemoussage from "@/assets/photos/photo-demoussage-resine.jpg";
+import photoIsolation from "@/assets/photos/photo-isolation-rampants.jpg";
+import photoArdoise from "@/assets/photos/photo-renovation-ardoise.jpg";
+import photoRefection from "@/assets/photos/photo-refection-pendant-apres.jpg";
+
+const title = "Couvreur et façadier dans l'Oise (60) — toiture, façade, isolation | RAGOT";
+const description =
+  "RAGOT Couvreur Pro, artisan couvreur dans l'Oise : couverture, réparation et démoussage de toiture, zinguerie, façade et ravalement, isolation, étanchéité. Garantie décennale, devis gratuit.";
+
+const reassurance = [
+  { k: "GARANTIE DÉCENNALE", v: "Vos travaux couverts pendant 10 ans" },
+  { k: "TOUS SUPPORTS", v: "Tuile, ardoise, bac acier, zinc" },
+  { k: "URGENCES", v: "Recherche de fuite et mise hors d'eau" },
+  { k: `ARTISAN DEPUIS ${site.foundingYear}`, v: "Un interlocuteur du devis à la réception" },
+];
+
+const href = Object.fromEntries(services.map((s) => [s.key, s.href]));
+const metiers = [
+  {
+    id: "services",
+    icon: "couverture" as const,
+    n: "01",
+    title: "Couverture & toiture",
+    href: href.couverture,
+    items: [
+      "Couverture complète, tout type de couverture",
+      "Remplacement de tuile, ardoise ou bac acier",
+      "Démoussage de toiture",
+      "Recherche de fuite",
+      "Peinture et résine sur toiture",
+      "Traitement hydrofuge",
+      "Points d'étanchéité, cimentation, zinguerie",
+      "Rénovation de boiserie",
+    ],
+  },
+  {
+    id: "facade",
+    icon: "facade" as const,
+    n: "02",
+    title: "Façade & ravalement",
+    href: href.facade,
+    items: ["Ravalement complet", "Peinture de façade", "Pied de cheminée", "Boiseries", "Ferronnerie"],
+    note: "Préparation des supports, protection des abords et finitions adaptées à l'exposition.",
+  },
+  {
+    id: "isolation",
+    icon: "isolation" as const,
+    n: "03",
+    title: "Isolation",
+    href: href.isolation,
+    items: [
+      "Combles aménagés ou non, rampants, sol",
+      "Isolant mince multicouche",
+      "Bac acier isolé (panneaux sandwich)",
+      "Soufflage : laine de roche, laine de verre, fibre de bois, ouate de cellulose",
+      "ITE : polystyrène, laine de bois, fibre de lin",
+    ],
+    note: "Isolation des rampants possible pendant la réfection de la toiture : un seul chantier.",
+  },
+  {
+    id: "etancheite",
+    icon: "etancheite" as const,
+    n: "04",
+    title: "Étanchéité toit-terrasse",
+    href: href.etancheite,
+    items: ["Membrane EPDM", "Étanchéité bitume / goudron", "Toit végétalisé"],
+    note: "Diagnostic du support, relevés et évacuations traités dans le même chantier.",
+  },
+];
+
+const accessoires = ["Gouttières", "VMC", "Fenêtres de toit Velux", "Dessous de toit", "Zinguerie", "Faîtage & solins"];
+
+const realisations = [
+  { src: photoRefection, alt: "Maison pendant la réfection de la couverture, échafaudage et isolant visibles, puis terminée avec ses tuiles neuves", title: "Réfection de couverture", sub: "Pendant et après : isolation et tuiles neuves" },
+  { src: photoMaison, alt: "Maison à colombages : toiture de chaume remplacée par une couverture en tuiles, avant et après", title: "Réfection de toiture en tuiles", sub: "Chaume déposé, couverture tuiles neuve" },
+  { src: photoChaume, alt: "Longère avant et après pose d'une couverture neuve en tuiles mécaniques", title: "Couverture neuve sur longère", sub: "Charpente vérifiée, tuiles mécaniques" },
+  { src: photoPignon, alt: "Pignon et balcon en bois avant et après reprise des boiseries et de la zinguerie", title: "Pignon et dessous de toit", sub: "Boiseries reprises, zinguerie neuve" },
+  { src: photoFaitage, alt: "Faîtage et rive en zinc avant et après réfection des points d'étanchéité", title: "Faîtage et rive en zinc", sub: "Points d'étanchéité refaits" },
+  { src: photoFacade, alt: "Façade jaune avant et après ravalement et mise en peinture", title: "Ravalement de façade", sub: "Préparation, enduit et finition teintée" },
+  { src: photoDemoussage, alt: "Toiture en tuiles à moitié traitée : partie gauche nettoyée et recouverte de résine, partie droite encore d'origine", title: "Démoussage et résine de toiture", sub: "Nettoyage puis résine colorée" },
+  { src: photoIsolation, alt: "Toiture découverte : panneaux isolants posés entre les chevrons avant la repose des tuiles", title: "Isolation de toiture", sub: "Panneaux isolants posés pendant la réfection" },
+  { src: photoArdoise, alt: "Maison rénovée avec couverture en ardoise et façade en parement pierre", title: "Rénovation complète", sub: "Couverture ardoise et façade" },
+];
+
+const methode = [
+  { t: "Prise de rendez-vous", d: `Un appel au ${site.phone} et nous fixons une visite sur place.` },
+  { t: "Diagnostic & devis", d: "État de la couverture, relevé des points sensibles, devis détaillé et gratuit." },
+  { t: "Chantier", d: "Protection des abords, matériaux annoncés, chantier tenu propre et sécurisé." },
+  { t: "Réception", d: "Visite de fin de travaux avec vous, conseils d'entretien et garanties remises." },
+];
+
+const faq = [
+  {
+    q: "Le devis et le déplacement sont-ils gratuits ?",
+    a: "Oui. Nous nous déplaçons gratuitement pour évaluer vos travaux sur place et vous remettons un devis détaillé, sans engagement.",
+  },
+  {
+    q: "Intervenez-vous en urgence en cas de fuite de toiture ?",
+    a: `Oui : recherche de fuite et mise hors d'eau après une tempête ou une tuile envolée. Pour une urgence, appelez directement le ${site.phone}.`,
+  },
+  {
+    q: "Sur quels types de couverture travaillez-vous ?",
+    a: "Tuile mécanique ou plate, ardoise naturelle, bac acier et zinc, en neuf comme en rénovation — y compris la dépose de toitures en chaume.",
+  },
+  {
+    q: "Peut-on isoler la toiture en même temps que sa réfection ?",
+    a: "Oui, c'est même le moment idéal : l'isolation des rampants se pose pendant la réfection de la couverture, en un seul chantier et avec un seul interlocuteur.",
+  },
+  {
+    q: "Quels travaux réalisez-vous en plus de la couverture ?",
+    a: "Démoussage et traitement hydrofuge, zinguerie, gouttières, fenêtres de toit Velux, ravalement et peinture de façade, isolation des combles et ITE, étanchéité de toit-terrasse.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={[faqSchema(faq)]}>
+  <!-- Hero -->
+  <section class="hero-bg on-dark relative">
+    <div
+      class="wrap grid items-center gap-[clamp(28px,3.4vw,56px)] pt-[clamp(28px,3.4vw,52px)] pb-[clamp(36px,4vw,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]"
+    >
+      <div class="intro flex flex-col gap-6 py-[clamp(8px,2vw,28px)] text-white">
+        <p
+          class="inline-flex w-max max-w-full items-center gap-2.5 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-[13.5px] font-semibold tracking-[0.1em] text-on-navy uppercase"
+        >
+          <span class="inline-block size-[7px] flex-none rounded-full bg-accent" aria-hidden="true"></span>
+          Artisan couvreur &amp; façadier
+        </p>
+        <h1 class="text-[clamp(38px,4.6vw,60px)] leading-[1.02] font-extrabold tracking-[-0.032em] text-balance">
+          Votre toiture entre les mains d'un pro.
+        </h1>
+        <p class="max-w-[33em] text-[clamp(17px,1.5vw,20px)] leading-[1.55] text-on-navy">
+          Couverture, démoussage, zinguerie, façade et ravalement, isolation et étanchéité
+          toit-terrasse. En neuf comme en rénovation, {site.zoneIn}.
+        </p>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a href={site.phoneHref} class="btn btn-red">Prendre RDV — {site.phone}</a>
+          <a href="/contact/" class="btn btn-outline">Devis gratuit</a>
+        </div>
+        <ul class="flex flex-wrap gap-2.5 pt-1.5">
+          <li class="pill">Garantie décennale</li>
+          <li class="pill">Devis &amp; déplacement gratuits</li>
+          <li class="pill">Neuf &amp; rénovation</li>
+        </ul>
+      </div>
+      <figure class="hero-media overflow-hidden rounded-[20px] bg-navy-950 shadow-hero">
+        <Photo
+          src={photoHero}
+          alt="Rénovation complète d'une toiture de chaume en tuiles plates — avant et après"
+          variant="heroWide"
+          priority
+        />
+        <figcaption class="px-4 py-3 text-sm font-semibold tracking-[0.02em] text-on-navy">
+          Avant / après — réfection complète en tuiles plates
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Réassurance -->
+  <div class="border-b border-line bg-white">
+    <ul
+      class="wrap grid-fit gap-[clamp(16px,2.4vw,32px)] py-[clamp(22px,2.8vw,34px)]"
+      style="--min:210px"
+    >
+      {
+        reassurance.map((r) => (
+          <li class="flex flex-col gap-1.5" data-sr>
+            <span class="font-display text-[14.5px] font-extrabold tracking-[0.04em] text-navy-800">{r.k}</span>
+            <span class="text-[15px] leading-[1.45] text-ink-5">{r.v}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- Nos métiers -->
+  <section class="wrap pt-[clamp(56px,7vw,104px)] pb-[clamp(24px,3vw,40px)]" aria-labelledby="metiers-titre">
+    <SectionHeading eyebrow="Nos métiers" title="Quatre spécialités" id="metiers-titre" class="mb-[clamp(26px,3.4vw,44px)]" />
+    <div class="grid-fit items-stretch gap-[clamp(12px,1.4vw,20px)]" style="--min:240px">
+      {
+        metiers.map((m) => (
+          <article id={m.id} class="group card card-hover gap-4">
+            <div class="flex items-center gap-3" aria-hidden="true">
+              <span class="flex size-[56px] flex-none items-center justify-center rounded-[14px] bg-lav-100 text-navy-800 transition-colors duration-300 group-hover:bg-navy-800 group-hover:text-white">
+                <ServiceIcon name={m.icon} class="size-[30px]" />
+              </span>
+              <span class="h-px flex-1 bg-rule" />
+              <span class="font-display text-[13px] font-extrabold tracking-[0.08em] text-accent">{m.n}</span>
+            </div>
+            <h3 class="text-[clamp(20px,1.9vw,24px)] leading-[1.18] font-bold tracking-[-0.018em]">
+              {m.title}
+            </h3>
+            <ul class="flex flex-col gap-2 text-[15.5px] leading-[1.45] text-ink-3">
+              {m.items.map((it) => <li>{it}</li>)}
+            </ul>
+            {m.note && <p class="text-[15px] leading-normal text-muted-2">{m.note}</p>}
+            <a
+              href={m.href}
+              class="mt-auto inline-flex items-center gap-2 pt-4 font-display text-[15px] font-bold"
+            >
+              En savoir plus<span class="sr-only"> : {m.title}</span> <span class="arrow-nudge" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Accessoires -->
+  <section class="wrap pt-[clamp(24px,3vw,40px)] pb-[clamp(48px,6vw,88px)]" aria-labelledby="accessoires-titre">
+    <div
+      class="grid-fit items-center gap-[clamp(20px,3vw,40px)] rounded-[20px] border border-line bg-white p-[clamp(24px,3vw,40px)] shadow-card"
+      style="--min:260px"
+    >
+      <div class="flex flex-col gap-3">
+        <h2 id="accessoires-titre" class="text-[clamp(21px,2.2vw,28px)] font-bold tracking-[-0.02em]">
+          Accessoires de toiture
+        </h2>
+        <p class="text-base leading-normal text-ink-6">
+          Pose, remplacement et entretien de tous les éléments qui accompagnent la couverture.
+        </p>
+      </div>
+      <ul class="flex flex-wrap gap-2.5">
+        {accessoires.map((a) => <li class="chip" data-sr>{a}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Réalisations -->
+  <section id="realisations" class="border-y border-line-2 bg-sand" aria-labelledby="realisations-titre">
+    <div class="wrap section-y">
+      <SectionHeading eyebrow="Réalisations" title="Chantiers récents" id="realisations-titre" />
+      <div class="grid-fit items-start gap-4" style="--min:320px">
+        {realisations.map((r) => <GalleryFigure src={r.src} alt={r.alt} title={r.title} subtitle={r.sub} crop />)}
+      </div>
+    </div>
+  </section>
+
+  <Reviews />
+
+  <VideoFeature
+    id="video-titre"
+    title="Hydrofuge coloré : de l'application au résultat"
+    text="Sur le toit avec nous : la couverture est nettoyée, puis l'hydrofuge coloré est projeté tuile par tuile. Le toit retrouve sa teinte et devient imperméable, l'eau ruisselle au lieu de pénétrer."
+    pills={["Nettoyage préalable", "Teinte au choix", "Avant / après en fin de vidéo"]}
+    video={{
+      src: "/videos/hydrofuge-colore-avant-apres.mp4",
+      poster: "/videos/hydrofuge-colore-avant-apres.webp",
+      title: "Hydrofuge coloré sur toiture, de l'application au résultat avant / après",
+      caption: "De l'application au résultat",
+    }}
+  />
+
+  <!-- Méthode -->
+  <section class="wrap section-y" aria-labelledby="methode-titre">
+    <SectionHeading eyebrow="Méthode" title="Du premier appel à la réception" id="methode-titre" />
+    <ol class="steps grid-fit gap-[var(--steps-gap)] lg:grid-cols-4" style="--min:220px" data-reveal>
+      {
+        methode.map((s, i) => (
+          <li class="step flex flex-col gap-3" style={`--i:${i}`}>
+            <span
+              class="step-marker relative z-[1] flex size-[38px] items-center justify-center rounded-xl bg-navy-800 font-display text-[15px] font-extrabold text-white"
+              aria-hidden="true"
+            >
+              {i + 1}
+            </span>
+            <h3 class="text-[19px] font-bold tracking-[-0.012em]">{s.t}</h3>
+            <p class="text-base leading-normal text-ink-6">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <RelatedGuides />
+
+  <ServiceArea />
+
+  <div class="border-t border-line-2">
+    <Faq items={faq} title="Vos questions sur nos travaux de toiture" />
+  </div>
+</BaseLayout>

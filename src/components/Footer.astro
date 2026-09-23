@@ -1,0 +1,97 @@
+---
+import { Image } from "astro:assets";
+import logo from "@/assets/logo-ragot.png";
+import PhoneButton from "./PhoneButton.astro";
+import { site, services } from "@/data/site";
+
+interface Props {
+  showCta?: boolean;
+}
+const { showCta = true } = Astro.props;
+const year = new Date().getFullYear();
+const a = site.address;
+const locality = [a.postalCode, a.addressLocality].filter(Boolean).join(" ");
+---
+
+<!-- Appel à l'action + pied de page : un seul bloc au même fond, séparé par des filets. -->
+<div class="site-end on-dark text-on-navy">
+{
+  showCta && (
+    <section class="text-white" aria-labelledby="cta-titre">
+      <div class="wrap">
+      <div class="flex flex-wrap items-center justify-between gap-7 border-b border-white/10 py-[clamp(44px,5.4vw,80px)]">
+        <div class="flex max-w-[34em] flex-col gap-3">
+          <h2 id="cta-titre" class="text-[clamp(26px,3.4vw,42px)] leading-[1.06] font-extrabold tracking-[-0.03em]">
+            Un projet, une fuite, un doute ?
+          </h2>
+          <p class="text-lg leading-normal text-on-navy">
+            Devis et déplacement gratuits. Nous nous déplaçons pour évaluer vos travaux.
+          </p>
+        </div>
+        <!-- Grille à rangées égales : les deux boutons ont la même hauteur, côte à côte comme empilés. -->
+        <div class="grid auto-rows-fr justify-items-start gap-3 sm:grid-flow-col">
+          <PhoneButton />
+          <a href="/contact/" class="btn btn-outline w-max py-0">Devis en ligne</a>
+        </div>
+      </div>
+      </div>
+    </section>
+  )
+}
+
+<footer>
+  <div
+    class="wrap grid-fit gap-[clamp(24px,3vw,44px)] py-[clamp(36px,4vw,56px)]"
+    style="--min:220px"
+  >
+    <div class="flex flex-col gap-3.5">
+      <Image
+        src={logo}
+        alt={site.name}
+        height={52}
+        densities={[1, 2]}
+        format="webp"
+        loading="lazy"
+        class="box-content block h-[52px] w-max rounded-xl bg-white px-3 py-2"
+      />
+      <span class="font-display text-lg font-extrabold text-white">RAGOT COUVREUR PRO</span>
+      <p class="text-[15px] leading-normal">
+        Artisan couvreur et façadier — rénovation et neuf.
+      </p>
+    </div>
+
+    <nav aria-labelledby="footer-prestations" class="flex flex-col gap-2.5 text-[15px]">
+      <span id="footer-prestations" class="font-display text-[12.5px] font-bold tracking-[0.16em] text-white">
+        PRESTATIONS
+      </span>
+      {services.map((s) => <a href={s.href} class="w-max text-on-navy hover:text-white">{s.label}</a>)}
+      <a href="/#realisations" class="w-max text-on-navy hover:text-white">Réalisations</a>
+      <a href="/conseils/" class="w-max text-on-navy hover:text-white">Conseils</a>
+      <a href="/contact/" class="w-max text-on-navy hover:text-white">Contact &amp; devis</a>
+    </nav>
+
+    <address class="flex flex-col gap-2.5 text-[15px] not-italic">
+      <span class="font-display text-[12.5px] font-bold tracking-[0.16em] text-white">CONTACT</span>
+      <a href={site.phoneHref} class="w-max font-display text-xl font-bold text-white hover:text-white/80">
+        {site.phone}
+      </a>
+      {site.email && <a href={`mailto:${site.email}`} class="w-max text-on-navy hover:text-white">{site.email}</a>}
+      <span>{site.openingHours.label}</span>
+      {a.streetAddress && <span>{a.streetAddress}</span>}
+      {locality && <span>{locality}</span>}
+      <span>Zone d'intervention : {site.zone}</span>
+    </address>
+  </div>
+  <div class="wrap">
+    <div class="flex flex-wrap justify-between gap-4 border-t border-white/10 py-[20px] text-[13px] text-on-navy-2">
+      <span>© {year} {site.name} — Garantie décennale</span>
+      <span class="flex flex-wrap gap-x-4 gap-y-1">
+        <span>Devis et déplacement gratuits</span>
+        <a href="/mentions-legales/" class="text-on-navy-2 underline-offset-2 hover:text-white hover:underline">
+          Mentions légales
+        </a>
+      </span>
+    </div>
+  </div>
+</footer>
+</div>

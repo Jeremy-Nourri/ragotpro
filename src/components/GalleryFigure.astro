@@ -1,0 +1,178 @@
+---
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Photo from "./Photo.astro";
+
+/**
+ * Photo de galerie cliquable : ouvre la visionneuse (PhotoSwipe) avec zoom et navigation.
+ * Toutes les photos de galerie d'une page forment une seule série (flèches précédent / suivant).
+ * Sans JavaScript, le lien ouvre simplement la grande image.
+ */
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  title: string;
+  subtitle?: string;
+  variant?: "gallery" | "half";
+  /** Vignette au format 3:2 recadrée au centre (grilles régulières). La visionneuse montre toujours la photo entière. */
+  crop?: boolean;
+}
+const { src, alt, title, subtitle, variant = "gallery", crop = false } = Astro.props;
+
+// Grande version pour le zoom : JPEG (lisible par tous les navigateurs), 3200 px max.
+const largeMax = Math.min(3200, src.width);
+const large = await getImage({ src, width: largeMax, format: "jpg", quality: 80 });
+const largeWidth = Number(large.attributes.width ?? largeMax);
+const largeHeight = Number(large.attributes.height ?? Math.round((src.height / src.width) * largeWidth));
+const caption = subtitle ? `${title} — ${subtitle}` : title;
+---
+
+<figure class="flex flex-col gap-2.5">
+  <a
+    href={large.src}
+    class:list={["photo zoomable group relative block", crop && "photo-crop"]}
+    data-pswp-width={largeWidth}
+    data-pswp-height={largeHeight}
+    data-caption={caption}
+    aria-label={`Agrandir la photo : ${title}`}
+  >
+    <Photo src={src} alt={alt} variant={variant} />
+    <span
+      class="zoom-hint pointer-events-none absolute top-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-navy-900 shadow-md backdrop-blur-sm"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" class="size-[18px]" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <circle cx="10.5" cy="10.5" r="6.5"></circle>
+        <path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"></path>
+      </svg>
+    </span>
+  </a>
+  {
+    subtitle ? (
+      <figcaption class="flex flex-col gap-0.5">
+        <span class="font-display text-[15.5px] font-bold text-ink">{title}</span>
+        <span class="text-[14.5px] text-muted">{subtitle}</span>
+      </figcaption>
+    ) : (
+      <figcaption class="text-[14.5px] font-semibold text-ink-5">{title}</figcaption>
+    )
+  }
+</figure>
+
+<script>
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import "photoswipe/style.css";
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: "main",
+    children: "a.zoomable",
+    // Le moteur (zoom, gestes) n'est téléchargé qu'au premier clic sur une photo.
+    pswpModule: () => import("photoswipe"),
+    bgOpacity: 1,
+    showHideAnimationType: reduceMotion ? "none" : "zoom",
+    // Zoom toujours disponible, même quand la photo tient déjà entière à l'écran :
+    // clic / double-tap = ×2,5 par rapport à l'affichage ; pincement ou molette jusqu'à ×4.
+    // (Sans ce réglage, une photo plus petite que l'écran n'était pas zoomable et le clic fermait la visionneuse.)
+    secondaryZoomLevel: (z) => z.fit * 2.5,
+    maxZoomLevel: (z) => z.fit * 4,
+    wheelToZoom: true,
+    // Un clic sur la photo zoome / dézoome, il ne ferme jamais ; un clic sur le fond ferme.
+    imageClickAction: "zoom",
+    bgClickAction: "close",
+    closeTitle: "Fermer (Échap)",
+    zoomTitle: "Zoomer",
+    arrowPrevTitle: "Photo précédente",
+    arrowNextTitle: "Photo suivante",
+    errorMsg: "La photo n'a pas pu être chargée.",
+    indexIndicatorSep: " / ",
+  });
+
+  // Légende sous la photo agrandie (titre de la réalisation).
+  lightbox.on("uiRegister", () => {
+    lightbox.pswp?.ui?.registerElement({
+      name: "caption",
+      order: 9,
+      isButton: false,
+      appendTo: "root",
+      onInit: (el, pswp) => {
+        pswp.on("change", () => {
+          el.textContent = pswp.currSlide?.data.element?.dataset.caption ?? "";
+        });
+      },
+    });
+  });
+
+  lightbox.init();
+</script>
+
+<style is:global>
+  /* Indice « loupe » : visible au survol sur ordinateur, toujours visible sur écran tactile. */
+  .zoomable {
+    cursor: zoom-in;
+  }
+  .zoomable .zoom-hint {
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+  .zoomable:hover .zoom-hint,
+  .zoomable:focus-visible .zoom-hint {
+    opacity: 1;
+    transform: none;
+  }
+  @media (hover: none) {
+    .zoomable .zoom-hint {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .zoomable img {
+    transition: transform 0.4s ease;
+  }
+  .zoomable:hover img {
+    transform: scale(1.02);
+  }
+
+  /* Visionneuse aux couleurs du site */
+  .pswp {
+    --pswp-bg: #0a0a3c;
+    --pswp-placeholder-bg: #14146b;
+    --pswp-icon-color: #fff;
+    --pswp-icon-color-secondary: #0a0a3c;
+  }
+  /* Bandeau dégradé derrière le compteur et les boutons : lisibles même sur une photo claire. */
+  .pswp__top-bar {
+    background: linear-gradient(rgba(10, 10, 60, 0.7), transparent);
+  }
+  .pswp__caption {
+    position: absolute;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(92vw, 640px);
+    padding: 8px 16px;
+    border-radius: 14px;
+    background: rgba(10, 10, 60, 0.8);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+    pointer-events: none;
+  }
+  @media (min-width: 768px) {
+    .pswp__caption {
+      font-size: 15px;
+      padding: 10px 18px;
+    }
+  }
+  .pswp__caption:empty {
+    display: none;
+  }
+</style>

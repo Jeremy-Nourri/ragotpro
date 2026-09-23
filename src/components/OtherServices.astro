@@ -1,0 +1,32 @@
+---
+import { services, type NavKey } from "@/data/site";
+
+/** Maillage interne entre pages métier. */
+interface Props {
+  current: NavKey;
+}
+const { current } = Astro.props;
+const others = services.filter((s) => s.key !== current);
+---
+
+<nav class="border-t border-line-2" aria-labelledby="autres-titre">
+  <div class="wrap flex flex-wrap items-center gap-x-6 gap-y-4 py-[clamp(28px,3.4vw,44px)]">
+    <h2 id="autres-titre" class="font-display text-[12.5px] font-bold tracking-[0.2em] text-accent uppercase">
+      Nos autres métiers
+    </h2>
+    <ul class="flex flex-wrap gap-2.5">
+      {
+        others.map((s) => (
+          <li data-sr>
+            <a
+              href={s.href}
+              class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-[18px] py-2.5 font-display text-[15px] font-bold text-navy-800 shadow-card transition hover:-translate-y-0.5 hover:border-lav-200 hover:text-accent"
+            >
+              {s.label} <span aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,16 @@
+---
+import { site } from "@/data/site";
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<a
+  href={site.phoneHref}
+  class:list={["btn btn-white w-max", className]}
+  aria-label={`Prendre rendez-vous par téléphone au ${site.phone}`}
+>
+  <span class="text-[12.5px] font-semibold tracking-[0.16em] uppercase opacity-65 font-sans">Prise de RDV</span>
+  <span class="text-[clamp(20px,2.4vw,28px)] font-extrabold tracking-[-0.015em]">{site.phone}</span>
+</a>

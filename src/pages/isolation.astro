@@ -1,0 +1,169 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import GalleryFigure from "@/components/GalleryFigure.astro";
+import Faq from "@/components/Faq.astro";
+import OtherServices from "@/components/OtherServices.astro";
+import RelatedGuides from "@/components/RelatedGuides.astro";
+import { serviceSchema, faqSchema } from "@/data/schema";
+
+import photoRampants from "@/assets/photos/photo-isolation-rampants.jpg";
+import photoSouffle from "@/assets/photos/photo-combles-souffle.jpg";
+import photoCharpente from "@/assets/photos/photo-combles-charpente.jpg";
+import photoRenovation from "@/assets/photos/photo-combles-renovation.jpg";
+
+const path = "/isolation/";
+const title = "Isolation des combles, rampants et ITE dans l'Oise | RAGOT";
+const description =
+  "Isolation des combles perdus ou aménagés, des rampants et du sol, isolation soufflée et isolation thermique par l'extérieur (ITE), seule ou avec la réfection de la toiture. Devis gratuit.";
+
+const familles = [
+  {
+    t: "Isolation intérieure",
+    items: [
+      "Combles aménagés ou non aménagés",
+      "Rampants de toiture",
+      "Isolation de sol",
+      "Isolant mince multicouche",
+      "Bac acier isolé (panneaux sandwich)",
+    ],
+  },
+  {
+    t: "Isolation soufflée",
+    items: ["Laine de roche", "Laine de verre", "Fibre de bois", "Ouate de cellulose"],
+    note: "Idéale en combles perdus : l'isolant couvre toute la surface sans pont thermique, en une journée de chantier.",
+  },
+  {
+    t: "Isolation extérieure (ITE)",
+    items: ["Panneaux polystyrène", "Laine de bois", "Fibre de lin"],
+    note: "L'ITE traite les ponts thermiques sans réduire la surface habitable, et se combine avec le ravalement.",
+  },
+];
+
+const atouts = [
+  { k: "CONFORT D'ÉTÉ COMME D'HIVER", d: "Des combles bien isolés, c'est une maison qui tient la chaleur l'hiver et la repousse l'été." },
+  { k: "FACTURE DE CHAUFFAGE", d: "La toiture est le premier poste de déperdition d'une maison non isolée." },
+  { k: "UN SEUL CHANTIER", d: "Couverture et isolation traitées ensemble : pas de coordination entre plusieurs entreprises." },
+];
+
+const faq = [
+  {
+    q: "Quelle isolation choisir pour des combles perdus ?",
+    a: "L'isolation soufflée (laine de roche, laine de verre, fibre de bois ou ouate de cellulose) est la solution la plus adaptée : rapide, sans pont thermique et généralement réalisée en une journée.",
+  },
+  {
+    q: "Peut-on isoler la toiture en même temps que la réfection de la couverture ?",
+    a: "Oui, c'est même le moment idéal : isolation des rampants ou pose de panneaux isolants pendant la réfection, en un seul chantier et avec un seul interlocuteur.",
+  },
+];
+
+const schema = [
+  serviceSchema(Astro.site!, {
+    name: "Isolation",
+    serviceType: "Isolation thermique",
+    description,
+    href: path,
+    offers: [
+      "Isolation des combles aménagés et perdus",
+      "Isolation des rampants",
+      "Isolation de sol",
+      "Isolation soufflée",
+      "Isolation thermique par l'extérieur (ITE)",
+    ],
+  }),
+  faqSchema(faq),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  active="isolation"
+  breadcrumbs={[{ name: "Isolation", href: path }]}
+  schema={schema}
+>
+  <PageHero
+    travaux="isolation"
+    crumb="Isolation"
+    title="Isolation des combles et de la toiture"
+    lead="Combles, rampants, sol, isolation extérieure (ITE). Isolant soufflé ou en panneaux, posé seul ou pendant la réfection de votre toiture."
+    image={photoRampants}
+    imageAlt="Toiture découverte : panneaux isolants posés entre les chevrons avant la repose des tuiles"
+    caption="Isolation de toiture posée pendant la réfection de la couverture"
+  />
+
+  <section class="wrap section-y" aria-labelledby="prestations-titre">
+    <SectionHeading eyebrow="Prestations" title="Trois familles d'isolation" id="prestations-titre" />
+    <div class="grid-fit gap-[clamp(12px,1.4vw,20px)]" style="--min:280px">
+      {
+        familles.map((f, i) => (
+          <article class="card card-hover gap-3.5 p-[clamp(22px,2.4vw,32px)]">
+            <span class="font-display text-[13px] font-extrabold tracking-[0.08em] text-brand" aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3 class="text-[21px] font-bold tracking-[-0.01em]">{f.t}</h3>
+            <div class="card-rule" aria-hidden="true" />
+            <ul class="flex flex-col gap-[9px] text-base leading-[1.45] text-ink-2">
+              {f.items.map((it) => <li>{it}</li>)}
+            </ul>
+            {f.note && <p class="mt-auto text-[15px] leading-normal text-muted-2">{f.note}</p>}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap pb-[clamp(48px,6vw,88px)]" aria-labelledby="chantiers-titre">
+    <SectionHeading eyebrow="Chantiers" title="Isolation soufflée en combles perdus" id="chantiers-titre" size="md" />
+    <div class="grid-fit items-start gap-4" style="--min:260px">
+      <GalleryFigure crop
+        src={photoSouffle}
+        alt="Combles perdus recouverts d'une couche épaisse et régulière d'isolant soufflé"
+        title="Couche continue, sans pont thermique"
+      />
+      <GalleryFigure crop
+        src={photoCharpente}
+        alt="Coffrage en panneau de bois autour d'un poteau de charpente, combles isolés par soufflage"
+        title="Coffrage autour de la charpente"
+      />
+      <GalleryFigure crop
+        src={photoRenovation}
+        alt="Combles avec charpente renforcée et isolant soufflé réparti sur tout le plancher"
+        title="Charpente renforcée puis combles isolés"
+      />
+    </div>
+  </section>
+
+  <section class="border-y border-line-2 bg-sand" aria-labelledby="pourquoi-titre">
+    <div class="wrap section-y grid-fit items-start gap-[clamp(24px,3vw,48px)]" style="--min:300px">
+      <div class="flex flex-col gap-[18px]">
+        <span class="eyebrow">Pourquoi isoler</span>
+        <h2 id="pourquoi-titre" class="h2-sm">Isoler par le toit, là où part la chaleur</h2>
+        <p class="text-[17px] leading-[1.55] text-ink-3">
+          Dans une maison mal isolée, c'est par la toiture que s'échappe la plus grande part de la chaleur. Isoler
+          les combles ou les rampants est souvent le chantier qui change le plus le confort au quotidien.
+        </p>
+        <p class="text-[17px] leading-[1.55] text-ink-3">
+          Couvreur de métier, nous pouvons poser l'isolation pendant la réfection de votre couverture : toiture
+          et isolation sont traitées ensemble, sans coordonner plusieurs entreprises.
+        </p>
+      </div>
+      <ul class="flex flex-col gap-3">
+        {
+          atouts.map((a) => (
+            <li class="card-sm gap-1.5 p-5">
+              <h3 class="font-display text-sm font-extrabold text-brand">{a.k}</h3>
+              <p class="text-base leading-[1.45] text-ink-4">{a.d}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <RelatedGuides service="isolation" />
+
+  <Faq items={faq} title="Isolation : vos questions" />
+  <OtherServices current="isolation" />
+</BaseLayout>

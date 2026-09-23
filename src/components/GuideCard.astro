@@ -1,0 +1,32 @@
+---
+import ServiceIcon from "./ServiceIcon.astro";
+import { guideHref, readingTime, serviceOf, type Guide } from "@/data/conseils";
+
+/** Carte d'un guide : prestation, titre, résumé, saisons et temps de lecture. Toute la carte est cliquable. */
+interface Props {
+  guide: Guide;
+  headingLevel?: "h2" | "h3";
+}
+const { guide, headingLevel = "h3" } = Astro.props;
+const Heading = headingLevel;
+const service = serviceOf(guide);
+---
+
+<article class="group card card-hover relative gap-4">
+  <div class="flex items-center gap-2.5 text-[13.5px] font-semibold text-navy-800">
+    <span class="flex size-9 items-center justify-center rounded-[10px] bg-lav-100" aria-hidden="true">
+      <ServiceIcon name={guide.data.service} class="size-[20px]" />
+    </span>
+    {service.label}
+  </div>
+  <Heading class="text-[clamp(19px,1.7vw,21px)] leading-[1.25] font-bold tracking-[-0.015em]">
+    <a href={guideHref(guide)} class="text-ink after:absolute after:inset-0 after:rounded-[18px] hover:text-ink">
+      {guide.data.title}
+    </a>
+  </Heading>
+  <p class="text-[15.5px] leading-normal text-ink-5">{guide.data.description}</p>
+  <div class="mt-auto flex flex-wrap items-center gap-2 pt-2 text-[13px] text-muted">
+    {guide.data.seasons.map((s) => <span class="rounded-full bg-sand px-2.5 py-1 font-medium text-ink-4">{s}</span>)}
+    <span class="ml-auto">{readingTime(guide)} min de lecture</span>
+  </div>
+</article>

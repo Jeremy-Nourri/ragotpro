@@ -1,0 +1,90 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { site } from "@/data/site";
+
+const a = site.address;
+const todo = (v: string, label: string) => v || `[${label} — à compléter]`;
+const address = [a.streetAddress, [a.postalCode, a.addressLocality].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+---
+
+<BaseLayout
+  title={`Mentions légales | ${site.name}`}
+  description={`Mentions légales du site ${site.name} : éditeur, hébergeur, assurance décennale et données personnelles.`}
+  breadcrumbs={[{ name: "Mentions légales", href: "/mentions-legales/" }]}
+  noindex
+>
+  <section class="hero-bg on-dark text-white">
+    <div class="intro wrap flex flex-col gap-5 py-[clamp(36px,4vw,64px)]">
+      <nav aria-label="Fil d'Ariane">
+        <ol class="flex flex-wrap gap-2 text-sm text-on-navy-2">
+          <li><a href="/" class="text-on-navy-2 hover:text-white">Accueil</a></li>
+          <li aria-hidden="true">/</li>
+          <li><span aria-current="page" class="text-white">Mentions légales</span></li>
+        </ol>
+      </nav>
+      <h1 class="text-[clamp(34px,4.6vw,58px)] leading-[1.05] font-extrabold tracking-[-0.025em]">Mentions légales</h1>
+    </div>
+  </section>
+
+  <div class="wrap section-y">
+    <div class="legal flex max-w-[46em] flex-col gap-8 text-[17px] leading-[1.6] text-ink-3">
+      <section>
+        <h2>Éditeur du site</h2>
+        <p>
+          {site.name} — {site.legalName} (entrepreneur individuel)<br />
+          {todo(address, "Adresse du siège")}<br />
+          SIRET : {todo(site.siret, "SIRET")}<br />
+          RCS : {site.rcs}<br />
+          N° de TVA intracommunautaire : {site.vatNumber}<br />
+          Téléphone : <a href={site.phoneHref}>{site.phone}</a><br />
+          E-mail : {site.email ? <a href={`mailto:${site.email}`}>{site.email}</a> : "[E-mail — à compléter]"}
+        </p>
+      </section>
+      <section>
+        <h2>Directeur de la publication</h2>
+        <p>{site.director}</p>
+      </section>
+      <section>
+        <h2>Hébergement</h2>
+        <p>[Nom, adresse et téléphone de l'hébergeur — à compléter]</p>
+      </section>
+      <section>
+        <h2>Assurance</h2>
+        <p>
+          Assurance décennale : {todo(site.insurance, "Assureur, n° de contrat et zone de couverture")}
+        </p>
+      </section>
+      <section>
+        <h2>Propriété intellectuelle</h2>
+        <p>
+          L'ensemble des contenus de ce site (textes, photographies de chantiers, logo) est la propriété de
+          {" "}{site.name}. Toute reproduction sans autorisation préalable est interdite.
+        </p>
+      </section>
+      <section>
+        <h2>Données personnelles</h2>
+        <p>
+          Les informations transmises via le formulaire de demande de devis (nom, téléphone, e-mail, adresse du chantier, description du projet)
+          sont utilisées uniquement pour vous recontacter au sujet de votre demande. Elles ne sont ni cédées ni
+          revendues et sont conservées au maximum 3 ans après le dernier contact. Conformément au RGPD, vous
+          disposez d'un droit d'accès, de rectification et de suppression de vos données en nous contactant au
+          {" "}<a href={site.phoneHref}>{site.phone}</a>.
+        </p>
+      </section>
+      <section>
+        <h2>Cookies</h2>
+        <p>Ce site n'utilise aucun cookie de suivi ni outil de mesure d'audience tiers.</p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .legal h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.018em;
+    color: var(--color-ink);
+    margin-bottom: 10px;
+  }
+</style>

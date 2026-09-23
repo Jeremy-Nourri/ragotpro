@@ -1,0 +1,193 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import GalleryFigure from "@/components/GalleryFigure.astro";
+import Faq from "@/components/Faq.astro";
+import OtherServices from "@/components/OtherServices.astro";
+import RelatedGuides from "@/components/RelatedGuides.astro";
+import { site } from "@/data/site";
+import { serviceSchema, faqSchema } from "@/data/schema";
+
+import photoMaison from "@/assets/photos/photo-maison.jpg";
+import photoChaume from "@/assets/photos/photo-chaume-tuile.jpg";
+import photoFaitage from "@/assets/photos/photo-faitage.jpg";
+import photoDemoussage from "@/assets/photos/photo-demoussage-resine.jpg";
+import photoArdoise from "@/assets/photos/photo-renovation-ardoise.jpg";
+import photoRefection from "@/assets/photos/photo-refection-pendant-apres.jpg";
+import photoCouvertureNeuve from "@/assets/photos/photo-couverture-pendant-apres.jpg";
+
+const path = "/couverture-toiture/";
+const title = "Couvreur : couverture, réparation et démoussage de toiture | RAGOT";
+const description =
+  "Couverture neuve ou rénovation en tuile, ardoise, bac acier et zinc. Réparation, recherche de fuite, démoussage, hydrofuge et zinguerie dans l'Oise. Devis gratuit.";
+
+const prestations = [
+  { t: "Couverture complète", d: "Dépose et repose de toiture, tout type de couverture : tuile mécanique ou plate, ardoise naturelle, bac acier (tôle). Charpente vérifiée, écran sous-toiture et ventilation refaits dans les règles." },
+  { t: "Remplacement ponctuel", d: "Tuiles cassées ou envolées, ardoises manquantes, tôles déformées : remise en état ciblée après tempête ou usure, avec matériaux assortis à l'existant." },
+  { t: "Recherche de fuite", d: "Localisation de l'infiltration, mise hors d'eau et réparation durable : solins, noues, faîtage, raccords de cheminée ou de velux." },
+  { t: "Zinguerie & étanchéité", d: "Reprise des points d'étanchéité, cimentation, solins, noues, habillages zinc et raccords de maçonnerie." },
+  { t: "Rénovation de boiserie", d: "Chevrons de rive, planches de rive, avant-toits et dessous de toit : remplacement des bois dégradés puis traitement et finition." },
+  { t: "Accessoires de toiture", d: "Gouttières, VMC, fenêtres de toit Velux, dessous de toit, chatières et closoirs : pose, remplacement et entretien." },
+];
+
+const signaux = [
+  { k: "TRACE D'HUMIDITÉ", d: "Auréole au plafond ou dans les combles après la pluie." },
+  { k: "TUILES DÉPLACÉES", d: "Après un coup de vent, même une seule tuile suffit à faire entrer l'eau." },
+  { k: "TOIT VERT DE MOUSSE", d: "Signe que la couverture reste humide en permanence." },
+  { k: "GOUTTIÈRE QUI DÉBORDE", d: "Risque d'infiltration en pied de mur et de dégradation des boiseries." },
+];
+
+const faq = [
+  {
+    q: "À quelle fréquence faut-il démousser une toiture ?",
+    a: "Sous notre climat humide, un démoussage suivi d'un traitement anti-mousse est généralement conseillé tous les 3 à 5 ans, selon l'exposition et la présence d'arbres à proximité. Un traitement hydrofuge prolonge l'effet.",
+  },
+  {
+    q: "Réparer ou refaire entièrement sa toiture ?",
+    a: "Tout dépend de l'état de la couverture, de la charpente et de l'écran sous-toiture. Lors du diagnostic gratuit, nous vous indiquons si une réparation ciblée suffit ou si une réfection complète est plus durable.",
+  },
+  {
+    q: "Que faire en cas de fuite de toiture ?",
+    a: `Protégez l'intérieur, puis appelez-nous au ${site.phone}. Nous localisons l'infiltration, mettons hors d'eau puis réparons durablement (tuiles, solins, noues, raccords de cheminée ou de Velux).`,
+  },
+  {
+    q: "Quels matériaux de couverture posez-vous ?",
+    a: "Tuile mécanique, tuile plate, ardoise naturelle, bac acier et zinc. Nous remplaçons aussi les toitures en chaume par une couverture en tuiles.",
+  },
+];
+
+const schema = [
+  serviceSchema(Astro.site!, {
+    name: "Couverture & toiture",
+    serviceType: "Couverture et réparation de toiture",
+    description,
+    href: path,
+    offers: [...prestations.map((p) => p.t), "Démoussage", "Traitement hydrofuge", "Peinture et résine de toiture"],
+  }),
+  faqSchema(faq),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  active="couverture"
+  breadcrumbs={[{ name: "Couverture & toiture", href: path }]}
+  schema={schema}
+>
+  <PageHero
+    travaux="couverture"
+    crumb="Couverture & toiture"
+    title="Couverture & toiture"
+    lead="Pose complète, réparation, entretien et traitement : tuile, ardoise, bac acier, zinc. En neuf comme en rénovation."
+    image={photoMaison}
+    imageAlt="Toiture de chaume remplacée par une couverture tuiles, avant et après"
+    caption="Avant / après — dépose du chaume et couverture tuiles neuve"
+  />
+
+  <section class="wrap section-y" aria-labelledby="prestations-titre">
+    <SectionHeading eyebrow="Prestations" title="Ce que nous réalisons" id="prestations-titre" />
+    <div class="grid-fit gap-[clamp(12px,1.4vw,20px)]" style="--min:260px">
+      {
+        prestations.map((p) => (
+          <article class="card card-hover gap-3">
+            <h3 class="text-xl font-bold tracking-[-0.01em]">{p.t}</h3>
+            <div class="card-rule" aria-hidden="true" />
+            <p class="text-base leading-normal text-ink-3">{p.d}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-y border-line-2 bg-sand" aria-labelledby="entretien-titre">
+    <div class="wrap section-y flex flex-col gap-[clamp(40px,5vw,72px)]">
+      <!-- Ligne 1 : le texte et la photo qui l'illustre. -->
+      <div class="grid-fit items-center gap-[clamp(24px,3vw,48px)]" style="--min:300px">
+        <div class="flex flex-col gap-[18px]">
+          <span class="eyebrow">Entretien</span>
+          <h2 id="entretien-titre" class="h2-sm">Démoussage, hydrofuge et résine</h2>
+          <p class="text-[17px] leading-[1.55] text-ink-3">
+            Mousses et lichens retiennent l'humidité et font vieillir la couverture avant l'heure. Un entretien
+            régulier coûte une fraction d'une réfection.
+          </p>
+          <ul class="list-rule">
+            <li><strong>Démoussage</strong> — nettoyage basse pression puis traitement anti-mousse rémanent.</li>
+            <li><strong>Traitement hydrofuge</strong> — la tuile redevient imperméable, l'eau ruisselle au lieu de pénétrer.</li>
+            <li><strong>Peinture &amp; résine de toiture</strong> — protection colorée qui prolonge la vie de la couverture.</li>
+          </ul>
+        </div>
+        <GalleryFigure
+          src={photoDemoussage}
+          alt="Toiture en tuiles à moitié traitée : partie gauche nettoyée et recouverte de résine, partie droite encore d'origine"
+          title="Démoussage et résine : à gauche la partie traitée, à droite l'état d'origine"
+          variant="half"
+        />
+      </div>
+
+      <!-- Ligne 2 : les autres chantiers, côte à côte. -->
+      <div class="flex flex-col gap-[clamp(16px,2vw,24px)]">
+        <h3 class="text-[clamp(20px,2vw,24px)] font-bold tracking-[-0.018em]">Autres chantiers de couverture</h3>
+        <div class="grid-fit items-start gap-4" style="--min:260px">
+          <GalleryFigure crop
+            src={photoChaume}
+            alt="Longère avant et après réfection de toiture"
+            title="Longère — couverture entièrement reprise"
+          />
+          <GalleryFigure crop
+            src={photoFaitage}
+            alt="Faîtage et rive en zinc, avant et après"
+            title="Faîtage, rive zinc et points d'étanchéité refaits"
+          />
+          <GalleryFigure crop
+            src={photoArdoise}
+            alt="Maison rénovée avec couverture en ardoise et façade en parement pierre"
+            title="Rénovation complète : couverture ardoise et façade"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section-y" aria-labelledby="chantiers-titre">
+    <SectionHeading eyebrow="Chantiers" title="Réfection de couverture, pendant et après" id="chantiers-titre" size="md" />
+    <div class="grid-fit items-start gap-4" style="--min:320px">
+      <GalleryFigure crop
+        src={photoRefection}
+        alt="Maison pendant la réfection de la couverture, échafaudage et isolant visibles, puis terminée avec ses tuiles neuves"
+        title="Couverture refaite avec isolation"
+        subtitle="Dépose, isolation, écran sous-toiture et tuiles neuves"
+        variant="half"
+      />
+      <GalleryFigure crop
+        src={photoCouvertureNeuve}
+        alt="Toiture entièrement découverte avec lattage neuf, puis recouverte de tuiles neuves"
+        title="Toiture entièrement reprise"
+        subtitle="Lattage neuf puis pose des tuiles"
+        variant="half"
+      />
+    </div>
+  </section>
+
+  <section class="wrap border-t border-line-2 section-y" aria-labelledby="signaux-titre">
+    <h2 id="signaux-titre" class="h2-sm mb-[clamp(20px,2.5vw,32px)]">Quand faut-il nous appeler ?</h2>
+    <ul class="grid-fit gap-[clamp(12px,1.6vw,20px)]" style="--min:230px">
+      {
+        signaux.map((s) => (
+          <li class="card-sm">
+            <h3 class="font-display text-sm font-extrabold text-brand">{s.k}</h3>
+            <p class="text-base leading-[1.45] text-ink-4">{s.d}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <RelatedGuides service="couverture" />
+
+  <div class="border-t border-line-2 bg-sand">
+    <Faq items={faq} title="Couverture : vos questions" />
+  </div>
+  <OtherServices current="couverture" />
+</BaseLayout>

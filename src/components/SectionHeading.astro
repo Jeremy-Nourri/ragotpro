@@ -1,0 +1,15 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  id?: string;
+  size?: "lg" | "md";
+  class?: string;
+}
+const { eyebrow, title, id, size = "lg", class: className } = Astro.props;
+---
+
+<div class:list={["mb-[clamp(24px,3vw,40px)] flex flex-col gap-2.5", className]}>
+  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+  <h2 id={id} class={size === "lg" ? "h2" : "h2-sm"}>{title}</h2>
+</div>

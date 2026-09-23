@@ -1,0 +1,134 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import GalleryFigure from "@/components/GalleryFigure.astro";
+import Faq from "@/components/Faq.astro";
+import OtherServices from "@/components/OtherServices.astro";
+import RelatedGuides from "@/components/RelatedGuides.astro";
+import { serviceSchema, faqSchema } from "@/data/schema";
+
+import photoFacade from "@/assets/photos/photo-facade.jpg";
+import photoFacadeHero from "@/assets/photos/photo-facade-avant-apres.jpg";
+import photoPignon from "@/assets/photos/photo-pignon.jpg";
+import photoFacadeEnduit from "@/assets/photos/photo-facade-enduit.jpg";
+
+const path = "/facade-ravalement/";
+const title = "Façadier dans l'Oise : ravalement, enduit et peinture de façade | RAGOT";
+const description =
+  "Ravalement et peinture de façade, boiseries, ferronnerie, pied de cheminée : préparation des supports et finitions adaptées à l'exposition. Devis et déplacement gratuits.";
+
+const prestations = [
+  { t: "Ravalement complet", d: "Nettoyage, traitement des fissures et des zones friables, rebouchage, sous-couche puis finition. La façade repart sur un support sain." },
+  { t: "Peinture de façade", d: "Peintures pliolite, siloxane ou acrylique choisies selon le support et l'exposition, teinte au choix." },
+  { t: "Pied de cheminée", d: "Reprise de l'enduit, solin et peinture : la zone la plus exposée du toit, traitée depuis la couverture." },
+  { t: "Boiseries", d: "Planches de rive, avant-toits, volets, bardages : décapage, traitement du bois, lasure ou peinture microporeuse." },
+  { t: "Ferronnerie", d: "Portails, garde-corps, grilles : brossage de la rouille, primaire antirouille puis finition." },
+  { t: "Peinture & résine sur toiture", d: "Après démoussage, une résine colorée redonne son aspect à la couverture et la protège des intempéries." },
+];
+
+const etapes = [
+  { t: "Protection", d: "Bâchage des menuiseries, du sol et des plantations." },
+  { t: "Nettoyage", d: "Lavage et traitement fongicide du support." },
+  { t: "Réparations", d: "Fissures ouvertes, rebouchage, reprise d'enduit." },
+  { t: "Finition", d: "Sous-couche puis deux couches de finition, nettoyage du chantier." },
+];
+
+const faq = [
+  {
+    q: "Quelle peinture choisir pour une façade ?",
+    a: "Le choix dépend du support et de l'exposition : pliolite pour les supports farinants et les conditions humides, siloxane pour une façade qui respire et reste propre, acrylique pour les supports sains. Nous vous conseillons lors du devis.",
+  },
+  {
+    q: "Quand faut-il refaire un ravalement de façade ?",
+    a: "Fissures, salissures persistantes, peinture qui s'écaille ou enduit qui se décolle sont les signes qu'un ravalement s'impose. En règle générale, une façade se rafraîchit tous les 10 ans environ.",
+  },
+  {
+    q: "Peut-on combiner ravalement et isolation extérieure ?",
+    a: "Oui. L'isolation thermique par l'extérieur (ITE) se combine naturellement avec le ravalement : un seul chantier pour isoler et rénover l'aspect de la façade, avec un seul interlocuteur.",
+  },
+];
+
+const schema = [
+  serviceSchema(Astro.site!, {
+    name: "Façade & ravalement",
+    serviceType: "Ravalement et peinture de façade",
+    description,
+    href: path,
+    offers: prestations.map((p) => p.t),
+  }),
+  faqSchema(faq),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  active="facade"
+  breadcrumbs={[{ name: "Façade & ravalement", href: path }]}
+  schema={schema}
+>
+  <PageHero
+    travaux="facade"
+    crumb="Façade & ravalement"
+    title="Façade & ravalement"
+    lead="Façades, boiseries, ferronnerie, pieds de cheminée : une façade propre, protégée et traitée dans les règles de l'art."
+    image={photoFacadeHero}
+    imageAlt="Façade de maison avant ravalement, enduit écaillé et taché, puis après : enduit refait et peinture jaune"
+    caption="Avant / après — ravalement et peinture de façade"
+  />
+
+  <section class="wrap section-y" aria-labelledby="prestations-titre">
+    <SectionHeading eyebrow="Prestations" title="Tous travaux de façade" id="prestations-titre" />
+    <div class="grid-fit gap-[clamp(12px,1.4vw,20px)]" style="--min:260px">
+      {
+        prestations.map((p) => (
+          <article class="card card-hover gap-3">
+            <h3 class="text-xl font-bold tracking-[-0.01em]">{p.t}</h3>
+            <div class="card-rule" aria-hidden="true" />
+            <p class="text-base leading-normal text-ink-3">{p.d}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-y border-line-2 bg-sand" aria-labelledby="deroule-titre">
+    <div class="wrap section-y">
+      <SectionHeading eyebrow="Déroulé" title="Un ravalement, étape par étape" id="deroule-titre" size="md" />
+      <ol class="grid-fit gap-[clamp(14px,1.8vw,24px)]" style="--min:200px">
+        {
+          etapes.map((e, i) => (
+            <li class="card-sm">
+              <span class="font-display text-[13px] font-extrabold text-brand" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 class="text-lg font-bold">{e.t}</h3>
+              <p class="text-base leading-[1.45] text-ink-6">{e.d}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="wrap section-y" aria-labelledby="avant-apres-titre">
+    <h2 id="avant-apres-titre" class="h2-sm mb-[clamp(18px,2.4vw,30px)]">Avant / après</h2>
+    <div class="grid-fit items-start gap-4" style="--min:280px">
+      <GalleryFigure crop src={photoFacade} alt="Façade avant et après peinture" title="Ravalement complet et finition teintée" />
+      <GalleryFigure crop src={photoPignon} alt="Pignon à colombages avant et après" title="Boiseries et colombages repris" />
+      <GalleryFigure crop
+        src={photoFacadeEnduit}
+        alt="Maison de ville après ravalement : façade rouge et encadrements de fenêtres en relief"
+        title="Façade teintée et encadrements décoratifs"
+      />
+    </div>
+  </section>
+
+  <RelatedGuides service="facade" />
+
+  <div class="border-t border-line-2 bg-sand">
+    <Faq items={faq} title="Façade et ravalement : vos questions" />
+  </div>
+  <OtherServices current="facade" />
+</BaseLayout>

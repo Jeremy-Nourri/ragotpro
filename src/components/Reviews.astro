@@ -1,0 +1,97 @@
+---
+import { reviews, reviewsSource } from "@/data/reviews";
+
+/** Avis clients : note globale à gauche, avis à droite. Pas de données structurées d'avis
+ *  (Google n'affiche pas les avis publiés par l'entreprise sur son propre site). */
+const fmt = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" });
+const score = reviewsSource.rating.toLocaleString("fr-FR");
+const full = Math.floor(reviewsSource.rating);
+const half = reviewsSource.rating - full >= 0.5;
+const star =
+  "M12 2.8l2.8 5.7 6.3.9-4.6 4.4 1.1 6.2L12 17l-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8z";
+---
+
+<section class="wrap section-y" aria-labelledby="avis-titre">
+  <div class="grid items-start gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,2fr)]">
+    <div class="flex flex-col gap-4 lg:sticky lg:top-[110px]">
+      <span class="eyebrow">Avis clients</span>
+      <h2 id="avis-titre" class="h2-sm">Ils nous ont confié leur toit</h2>
+      <div class="flex items-end gap-3 pt-2">
+        <span class="font-display text-[clamp(56px,6vw,76px)] leading-[0.9] font-extrabold tracking-[-0.04em] text-navy-800">
+          {score}
+        </span>
+        <span class="pb-1.5 font-display text-lg font-bold text-muted">/ 5</span>
+      </div>
+      <div class="flex gap-1 text-[#f5a623]" role="img" aria-label={`Note moyenne ${score} sur 5`}>
+        {
+          Array.from({ length: 5 }, (_, i) => (
+            <svg viewBox="0 0 24 24" class="size-6" aria-hidden="true">
+              {i === full && half ? (
+                <>
+                  <defs>
+                    <linearGradient id="half-star">
+                      <stop offset="50%" stop-color="currentColor" />
+                      <stop offset="50%" stop-color="#d9d6ce" />
+                    </linearGradient>
+                  </defs>
+                  <path d={star} fill="url(#half-star)" />
+                </>
+              ) : (
+                <path d={star} fill={i < full ? "currentColor" : "#d9d6ce"} />
+              )}
+            </svg>
+          ))
+        }
+      </div>
+      <p class="text-[15px] leading-normal text-ink-5">
+        Note moyenne de nos clients sur <strong class="font-semibold text-ink-3">{reviewsSource.name}</strong>.
+      </p>
+      {
+        reviewsSource.url && (
+          <a href={reviewsSource.url} target="_blank" rel="noopener" class="w-max font-display text-[15px] font-bold">
+            Voir tous les avis<span class="sr-only"> sur {reviewsSource.name} (nouvel onglet)</span>
+          </a>
+        )
+      }
+    </div>
+
+    <ul class="grid-fit gap-4" style="--min:240px">
+      {
+        reviews.map((r) => (
+          <li class="review card relative gap-5">
+            <div class="flex items-center justify-between">
+              <svg viewBox="0 0 48 36" class="h-7 w-auto flex-none text-lav-200" fill="currentColor" aria-hidden="true">
+                <path d="M0 36V21.6C0 9.4 6.6 2.2 18.2 0l2 5.1C13.7 7 10.4 10.8 10 16.5h8.4V36H0zm27.6 0V21.6C27.6 9.4 34.2 2.2 45.8 0l2 5.1c-6.5 1.9-9.8 5.7-10.2 11.4H46V36H27.6z" />
+              </svg>
+              <span class="flex gap-0.5 text-[#f5a623]" role="img" aria-label={`${r.rating} étoiles sur 5`}>
+                {Array.from({ length: r.rating }, () => (
+                  <svg viewBox="0 0 24 24" class="size-4" aria-hidden="true">
+                    <path d={star} fill="currentColor" />
+                  </svg>
+                ))}
+              </span>
+            </div>
+            <blockquote class="flex-auto font-display text-[clamp(18px,1.6vw,21px)] leading-[1.35] font-semibold tracking-[-0.012em] text-ink">
+              {r.text}
+            </blockquote>
+            <div class="flex items-center gap-3 border-t border-rule pt-4">
+              <span
+                class="flex size-10 flex-none items-center justify-center rounded-full bg-navy-800 font-display text-[15px] font-bold text-white"
+                aria-hidden="true"
+              >
+                {r.author.charAt(0)}
+              </span>
+              <span class="flex min-w-0 flex-col">
+                <span class="font-display text-[15px] font-bold text-ink">{r.author}</span>
+                <span class="text-[13.5px] text-muted">
+                  <time datetime={r.date}>{fmt.format(new Date(r.date))}</time>
+                  {r.service && <> · {r.service}</>}
+                </span>
+              </span>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

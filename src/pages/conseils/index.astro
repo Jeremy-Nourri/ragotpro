@@ -1,0 +1,56 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import GuideCard from "@/components/GuideCard.astro";
+import { getGuides } from "@/data/conseils";
+import { services } from "@/data/site";
+
+const path = "/conseils/";
+const title = "Conseils toiture, façade et isolation | RAGOT Couvreur Pro";
+const description =
+  "Entretien de toiture saison par saison, démoussage, tempête, ravalement, isolation des combles, toit-terrasse : les conseils pratiques d'un artisan couvreur de l'Oise.";
+
+const guides = await getGuides();
+// Regroupement par prestation, dans l'ordre du menu.
+const groups = services
+  .map((s) => ({ service: s, guides: guides.filter((g) => g.data.service === s.key) }))
+  .filter((g) => g.guides.length > 0);
+---
+
+<BaseLayout title={title} description={description} breadcrumbs={[{ name: "Conseils", href: path }]} pageType="CollectionPage">
+  <section class="hero-bg on-dark text-white">
+    <div class="intro wrap flex flex-col gap-[22px] pt-[clamp(28px,3.4vw,52px)] pb-[clamp(40px,5vw,72px)]">
+      <nav aria-label="Fil d'Ariane">
+        <ol class="flex flex-wrap gap-2 text-sm text-on-navy-2">
+          <li><a href="/" class="text-on-navy-2 hover:text-white">Accueil</a></li>
+          <li aria-hidden="true">/</li>
+          <li><span aria-current="page" class="text-white">Conseils</span></li>
+        </ol>
+      </nav>
+      <h1 class="max-w-[16em] text-[clamp(34px,4.6vw,58px)] leading-[1.05] font-extrabold tracking-[-0.025em] text-balance">
+        Conseils de couvreur
+      </h1>
+      <p class="max-w-[36em] text-[clamp(17px,1.5vw,20px)] leading-normal text-on-navy">
+        Entretenir sa toiture au fil des saisons, réagir après une tempête, choisir sa peinture de façade ou son
+        isolation : nos réponses aux questions que nos clients nous posent le plus.
+      </p>
+    </div>
+  </section>
+
+  {
+    groups.map(({ service, guides }, i) => (
+      <section class:list={["section-y", i % 2 === 1 && "border-y border-line-2 bg-sand"]} aria-labelledby={`g-${service.key}`}>
+        <div class="wrap flex flex-col gap-[clamp(20px,2.4vw,32px)]">
+          <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+            <h2 id={`g-${service.key}`} class="h2-sm">{service.label}</h2>
+            <a href={service.href} class="font-display text-[15px] font-bold">
+              Découvrir la prestation
+            </a>
+          </div>
+          <div class="grid-fit gap-4" style="--min:280px">
+            {guides.map((g) => <GuideCard guide={g} />)}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>

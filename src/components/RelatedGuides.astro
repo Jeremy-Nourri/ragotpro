@@ -1,0 +1,38 @@
+---
+import GuideCard from "./GuideCard.astro";
+import SectionHeading from "./SectionHeading.astro";
+import { getGuides } from "@/data/conseils";
+import type { NavKey } from "@/data/site";
+
+/** Bloc « Nos conseils » : guides liés à une prestation (ou mis en avant), avec lien vers tous les guides. */
+interface Props {
+  service?: Exclude<NavKey, "" | "contact">;
+  exclude?: string;
+  title?: string;
+  limit?: number;
+}
+const { service, exclude, title = "Nos conseils de couvreur", limit = 3 } = Astro.props;
+let guides = await getGuides((g) => g.id !== exclude && (service ? g.data.service === service : g.data.featured));
+// Compléter avec les plus récents si la prestation a moins de guides que la limite.
+if (guides.length < limit) {
+  const more = await getGuides((g) => g.id !== exclude && !guides.some((x) => x.id === g.id));
+  guides = [...guides, ...more];
+}
+guides = guides.slice(0, limit);
+---
+
+{
+  guides.length > 0 && (
+    <section class="wrap section-y" aria-labelledby="conseils-titre">
+      <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <SectionHeading eyebrow="Conseils" title={title} id="conseils-titre" size="md" />
+        <a href="/conseils/" class="mb-[clamp(24px,3vw,40px)] font-display text-[15px] font-bold">
+          Tous nos conseils
+        </a>
+      </div>
+      <div class="grid-fit gap-4" style="--min:280px">
+        {guides.map((g) => <GuideCard guide={g} />)}
+      </div>
+    </section>
+  )
+}

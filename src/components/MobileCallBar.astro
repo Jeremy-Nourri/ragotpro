@@ -1,0 +1,26 @@
+---
+import { site } from "@/data/site";
+
+/** Barre d'action fixe en bas d'écran, sur mobile uniquement. Apparaît après le premier écran défilé. */
+---
+
+<div class="callbar md:hidden" data-callbar>
+  <a href={site.phoneHref} class="btn btn-navy flex-1 gap-2 px-3 py-[9px] text-[14px] shadow-none" aria-label={`Appeler ${site.name} au ${site.phone}`}>
+    <svg viewBox="0 0 24 24" class="size-[15px] flex-none" fill="currentColor" aria-hidden="true">
+      <path
+        d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"
+      ></path>
+    </svg>
+    Appeler
+  </a>
+  <a href="/contact/" class="btn btn-red flex-1 px-3 py-[9px] text-[14px] shadow-none">Demander un devis</a>
+</div>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-callbar]");
+  if (bar) {
+    const update = () => bar.toggleAttribute("data-visible", window.scrollY > window.innerHeight * 0.6);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+  }
+</script>

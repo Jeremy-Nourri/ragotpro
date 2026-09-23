@@ -1,0 +1,175 @@
+---
+import { Image } from "astro:assets";
+import logo from "@/assets/logo-ragot.png";
+import { site, services, type NavKey } from "@/data/site";
+
+interface Props {
+  active?: NavKey;
+}
+const { active = "" } = Astro.props;
+const isHome = Astro.url.pathname === "/";
+
+const links = [
+  ...services.map((s) => ({ href: s.href, nav: s.nav, label: s.label, current: s.key === active })),
+  { href: "/#realisations", nav: "Réalisations", label: "Réalisations", current: false },
+  { href: "/conseils/", nav: "Conseils", label: "Conseils", current: Astro.url.pathname.startsWith("/conseils/") },
+];
+---
+
+<header
+  id="site-header"
+  class="sticky top-0 z-60 border-b border-navy-800/8 bg-page/88 backdrop-blur-[14px] transition-[background-color,box-shadow] duration-300"
+>
+  <div class="wrap flex flex-wrap items-center gap-x-[clamp(12px,1.6vw,24px)] gap-y-2 py-3 lg:flex-nowrap">
+    <a
+      href="/"
+      class="flex flex-none items-center gap-3"
+      aria-label={`${site.name} — accueil`}
+      aria-current={isHome ? "page" : undefined}
+    >
+      <Image
+        src={logo}
+        alt=""
+        height={52}
+        densities={[1, 2]}
+        format="webp"
+        loading="eager"
+        class="block h-[44px] w-auto sm:h-[52px]"
+      />
+      <span class="flex flex-col leading-none">
+        <span class="font-display text-[19px] font-extrabold tracking-[-0.015em] text-navy-800">RAGOT</span>
+        <span class="mt-1 text-[10.5px] font-semibold tracking-[0.2em] text-accent">COUVREUR PRO</span>
+      </span>
+    </a>
+
+    <nav
+      aria-label="Navigation principale"
+      class="order-last hidden w-full items-center justify-center gap-1 border-t border-navy-800/8 pt-2 text-[14.5px] font-medium md:flex lg:order-none lg:w-auto lg:flex-auto lg:border-0 lg:pt-0 xl:text-[15px]"
+    >
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            aria-current={l.current ? "page" : undefined}
+            class:list={[
+              "rounded-full px-3 py-2 whitespace-nowrap transition-colors hover:bg-brand/7 hover:text-navy-800",
+              l.current ? "bg-lav-100 font-bold text-navy-800" : "text-[#33333F]",
+            ]}
+          >
+            {l.nav}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="ml-auto flex flex-none items-center gap-2 lg:ml-0">
+      <a
+        href="/contact/"
+        aria-current={active === "contact" ? "page" : undefined}
+        class="btn btn-red hidden px-[18px] py-[10px] text-[14.5px] shadow-none hover:bg-navy-900 hover:text-white sm:inline-flex"
+      >
+        Demander un devis
+      </a>
+      <a
+        href={site.phoneHref}
+        class="btn btn-navy size-[42px] p-0 text-[14.5px] shadow-none xl:size-auto xl:px-[18px] xl:py-[10px]"
+        aria-label={`Appeler ${site.name} au ${site.phone}`}
+      >
+        <svg viewBox="0 0 24 24" class="size-[17px] flex-none" fill="currentColor" aria-hidden="true">
+          <path
+            d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"
+          ></path>
+        </svg>
+        <span class="hidden xl:inline">{site.phone}</span>
+      </a>
+      <button
+        type="button"
+        class="burger md:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Ouvrir le menu"
+        data-menu-toggle
+      >
+        <span class="burger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Menu mobile : hors du <header>, car son backdrop-filter piégerait un élément fixed. -->
+<div id="mobile-menu" class="mobile-menu md:hidden" data-open="false" inert>
+  <div class="mobile-menu-inner wrap">
+    <nav aria-label="Navigation mobile">
+      <ul class="flex flex-col">
+        {
+          links.map((l, i) => (
+            <li class="menu-item" style={`--i:${i}`}>
+              <a href={l.href} class="menu-link" aria-current={l.current ? "page" : undefined}>
+                <span class="menu-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                <span class="flex-auto">{l.label}</span>
+                <svg viewBox="0 0 24 24" class="menu-arrow" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu-item mt-auto flex flex-col gap-3 pt-8" style={`--i:${links.length}`}>
+      <a href="/contact/" class="btn btn-red w-full">Demander un devis gratuit</a>
+      <a href={site.phoneHref} class="btn btn-outline w-full" aria-label={`Appeler ${site.name} au ${site.phone}`}>
+        Appeler le {site.phone}
+      </a>
+      <p class="pt-1 text-center text-sm text-on-navy-2">
+        {site.openingHours.label} · Devis &amp; déplacement gratuits
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = document.getElementById("mobile-menu");
+  const header = document.getElementById("site-header");
+
+  if (toggle && menu && header) {
+    const root = document.documentElement;
+    const desktop = window.matchMedia("(min-width: 768px)");
+
+    const setOpen = (open: boolean, { restoreFocus = true } = {}) => {
+      if (open) root.style.setProperty("--header-h", `${header.offsetHeight}px`);
+      menu.dataset.open = String(open);
+      menu.inert = !open;
+      root.classList.toggle("menu-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
+      // Focus à l'image suivante : la visibilité des liens doit d'abord être recalculée
+      // (en mouvement réduit, la règle globale leur donne une transition de 0,01 ms).
+      if (open) {
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => menu.querySelector<HTMLElement>(".menu-link")?.focus({ preventScroll: true })),
+        );
+      } else if (restoreFocus) toggle.focus({ preventScroll: true });
+    };
+    const isOpen = () => menu.dataset.open === "true";
+
+    // Ombre sous l'en-tête dès que la page défile : signale qu'il reste accroché au-dessus du contenu.
+    const onScroll = () => header.toggleAttribute("data-scrolled", window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen()) setOpen(false);
+    });
+    // Un lien d'ancre sur la même page (ex. /#realisations) ne recharge pas : on referme.
+    menu.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) setOpen(false, { restoreFocus: false });
+    });
+    desktop.addEventListener("change", (e) => {
+      if (e.matches && isOpen()) setOpen(false, { restoreFocus: false });
+    });
+  }
+</script>

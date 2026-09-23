@@ -1,0 +1,193 @@
+---
+import { Font } from "astro:assets";
+import "@/styles/global.css";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import MobileCallBar from "@/components/MobileCallBar.astro";
+import { site, type NavKey } from "@/data/site";
+import { businessSchema, websiteSchema, webPageSchema, breadcrumbSchema } from "@/data/schema";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Chemin d'une image Open Graph absolue ou relative au site (défaut : /og-image.jpg). */
+  ogImage?: string;
+  ogImageAlt?: string;
+  active?: NavKey;
+  /** Fil d'Ariane (hors accueil) — alimente le BreadcrumbList. */
+  breadcrumbs?: { name: string; href: string }[];
+  /** Données structurées supplémentaires propres à la page. */
+  schema?: Record<string, unknown>[];
+  pageType?: string;
+  noindex?: boolean;
+  showCta?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogImage = "/og-image.jpg",
+  ogImageAlt = `${site.name} — toiture rénovée avant / après`,
+  active = "",
+  breadcrumbs,
+  schema = [],
+  pageType,
+  noindex = false,
+  showCta = true,
+} = Astro.props;
+
+const base = Astro.site ?? Astro.url;
+const canonical = new URL(Astro.url.pathname, base).href;
+const ogImageUrl = new URL(ogImage, base).href;
+
+const graph = [
+  businessSchema(base),
+  websiteSchema(base),
+  webPageSchema(base, { url: canonical, title, description, image: ogImageUrl, type: pageType }),
+  ...(breadcrumbs ? [breadcrumbSchema(base, [{ name: "Accueil", href: "/" }, ...breadcrumbs])] : []),
+  ...schema,
+];
+const jsonLd = JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c");
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta
+      name="robots"
+      content={noindex
+        ? "noindex, follow"
+        : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}
+    />
+
+    <Font cssVariable="--font-archivo" preload />
+    <Font cssVariable="--font-barlow" preload={[{ weight: "400" }]} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="geo.region" content="FR-60" />
+    <meta name="geo.placename" content={site.address.addressLocality || site.address.addressRegion} />
+    {site.geo && <meta name="geo.position" content={`${site.geo.latitude};${site.geo.longitude}`} />}
+    {site.geo && <meta name="ICBM" content={`${site.geo.latitude}, ${site.geo.longitude}`} />}
+
+    <meta name="theme-color" content="#0F0F52" />
+    <meta name="format-detection" content="telephone=yes" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script type="application/ld+json" set:html={jsonLd} />
+  </head>
+  <body>
+    <a
+      href="#contenu"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:font-display focus:font-bold focus:text-navy-800 focus:shadow-lg"
+    >
+      Aller au contenu
+    </a>
+    <Header active={active} />
+    <main id="contenu">
+      <slot />
+    </main>
+    <Footer showCta={showCta} />
+    <MobileCallBar />
+    <script>
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // 1. Blocs apparaissant au défilement : titres de section, cartes, photos, questions, vidéos.
+      //    Le hero (1re section) et les étapes (animation dédiée) sont exclus.
+      const SR_SELECTOR = [
+        "main h2",
+        "main .eyebrow",
+        "main h2 + p",
+        "main .card",
+        "main .card-sm",
+        "main figure",
+        "main details",
+        "main .list-rule > li",
+        "main form",
+        "main [data-sr]",
+      ].join(",");
+      const hero = document.querySelector("main > section:first-child");
+      const srEls = reduceMotion
+        ? []
+        : [...document.querySelectorAll<HTMLElement>(SR_SELECTOR)].filter(
+            (el) => !hero?.contains(el) && !el.parentElement?.closest(".steps, .card, .card-sm, figure, form, details, .pswp"),
+          );
+      // Un élément déjà contenu dans un autre bloc animé suit son parent (pas de double animation).
+      for (const el of srEls) {
+        const siblings = el.parentElement ? [...el.parentElement.children].filter((c) => srEls.includes(c as HTMLElement)) : [];
+        el.style.setProperty("--sr-i", String(Math.min(siblings.indexOf(el), 5)));
+        el.classList.add("sr");
+        // Fin de l'apparition : on retire les classes pour rendre la main aux transitions d'origine (survol des cartes…).
+        el.addEventListener(
+          "transitionend",
+          (ev) => {
+            if (ev.target === el && ev.propertyName === "transform") {
+              el.classList.remove("sr", "is-in");
+              el.style.removeProperty("--sr-i");
+            }
+          },
+          { once: false },
+        );
+      }
+
+      // 2. Déclenchement : [data-reveal] (étapes) et .sr, une seule fois à l'entrée dans l'écran.
+      const targets = [...document.querySelectorAll("[data-reveal]"), ...srEls];
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add("is-in");
+                io.unobserve(e.target);
+              }
+            }
+          },
+          // Déclenche quand le haut de l'élément dépasse ~20 % du bas de l'écran :
+          // l'animation se joue sous les yeux du visiteur, pas en bordure d'écran.
+          { threshold: 0, rootMargin: "0px 0px -20% 0px" },
+        );
+        targets.forEach((t) => io.observe(t));
+
+        // Sécurité bas de page : les derniers blocs ne peuvent pas toujours remonter à 20 % du bas.
+        // Arrivé tout en bas, on révèle ce qui reste.
+        const revealRest = () => {
+          if (window.innerHeight + window.scrollY < document.documentElement.scrollHeight - 4) return;
+          for (const t of targets) {
+            if (!t.classList.contains("is-in")) {
+              t.classList.add("is-in");
+              io.unobserve(t);
+            }
+          }
+          window.removeEventListener("scroll", revealRest);
+        };
+        window.addEventListener("scroll", revealRest, { passive: true });
+        revealRest();
+      } else {
+        targets.forEach((t) => t.classList.add("is-in"));
+      }
+    </script>
+  </body>
+</html>

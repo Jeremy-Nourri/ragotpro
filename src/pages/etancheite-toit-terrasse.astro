@@ -1,0 +1,150 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import HeroHighlights from "@/components/HeroHighlights.astro";
+import Faq from "@/components/Faq.astro";
+import OtherServices from "@/components/OtherServices.astro";
+import RelatedGuides from "@/components/RelatedGuides.astro";
+import VideoFeature from "@/components/VideoFeature.astro";
+import { site } from "@/data/site";
+import { serviceSchema, faqSchema } from "@/data/schema";
+
+// TODO : photos manquantes (hero + 4 vignettes : pose EPDM, relevé d'acrotère, toiture végétalisée,
+// évacuation). Les ajouter dans src/assets/photos/ puis les brancher ici.
+
+const path = "/etancheite-toit-terrasse/";
+const title = "Étanchéité toit-terrasse : EPDM, bitume, végétalisé | RAGOT";
+const description =
+  "Étanchéité de toit-terrasse en membrane EPDM, bitume ou toiture végétalisée : neuf, réfection et reprise ponctuelle, relevés et évacuations compris. Devis gratuit.";
+
+const solutions = [
+  {
+    t: "Membrane EPDM",
+    d: "Une membrane caoutchouc posée en grandes largeurs, donc très peu de soudures. Souple, elle suit les mouvements du support et se répare facilement.",
+    note: "Recommandé pour les terrasses inaccessibles et les extensions.",
+  },
+  {
+    t: "Bitume / goudron",
+    d: "Bicouche soudé au chalumeau, solution éprouvée pour la réfection de terrasses existantes et les supports maçonnés.",
+    note: "Reprise possible sur ancien complexe bitumineux.",
+  },
+  {
+    t: "Toiture végétalisée",
+    d: "Étanchéité anti-racines, couche drainante et substrat : inertie thermique, rétention d'eau de pluie et toiture agréable à regarder.",
+    note: "Étude de la charge admissible avant travaux.",
+  },
+];
+
+const faq = [
+  {
+    q: "EPDM ou bitume : quelle étanchéité choisir ?",
+    a: "L'EPDM, posé en grandes largeurs avec très peu de joints, convient particulièrement aux terrasses inaccessibles et aux extensions. Le bitume bicouche reste une valeur sûre pour la réfection de terrasses existantes et les supports maçonnés.",
+  },
+  {
+    q: "Pourquoi mon toit-terrasse fuit-il ?",
+    a: "Les relevés périphériques (pieds de mur, acrotères) sont la cause la plus fréquente d'infiltration, suivis des évacuations bouchées et des traversées mal traitées (VMC, gaines). Nous diagnostiquons l'origine avant toute intervention.",
+  },
+  {
+    q: "Peut-on végétaliser n'importe quel toit-terrasse ?",
+    a: "Non : une toiture végétalisée ajoute une charge importante. Nous étudions la charge admissible de la structure avant de proposer cette solution.",
+  },
+];
+
+const schema = [
+  serviceSchema(Astro.site!, {
+    name: "Étanchéité toit-terrasse",
+    serviceType: "Étanchéité de toiture-terrasse",
+    description,
+    href: path,
+    offers: solutions.map((s) => s.t),
+  }),
+  faqSchema(faq),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  active="etancheite"
+  breadcrumbs={[{ name: "Étanchéité toit-terrasse", href: path }]}
+  schema={schema}
+>
+  <PageHero
+    travaux="etancheite"
+    crumb="Étanchéité toit-terrasse"
+    title="Étanchéité toit-terrasse"
+    lead="Membrane EPDM, bitume, toiture végétalisée : neuf, réfection ou reprise ponctuelle, relevés et évacuations compris."
+  >
+    <HeroHighlights
+      slot="aside"
+      title="Étanchéité"
+      items={[
+        "Membrane EPDM, bitume bicouche ou toiture végétalisée",
+        "Neuf, réfection complète ou reprise ponctuelle",
+        "Relevés, évacuations et traversées compris",
+        "Diagnostic du support avant travaux",
+      ]}
+    />
+  </PageHero>
+
+  <section class="wrap section-y" aria-labelledby="solutions-titre">
+    <SectionHeading eyebrow="Solutions" title="Le bon complexe pour votre terrasse" id="solutions-titre" />
+    <div class="grid-fit gap-[clamp(12px,1.4vw,20px)]" style="--min:280px">
+      {
+        solutions.map((s) => (
+          <article class="card card-hover gap-3.5 p-[clamp(22px,2.4vw,32px)]">
+            <h3 class="text-[21px] font-bold tracking-[-0.01em]">{s.t}</h3>
+            <div class="card-rule" aria-hidden="true" />
+            <p class="text-base leading-normal text-ink-3">{s.d}</p>
+            <p class="mt-auto text-[15px] leading-[1.45] text-muted-2">{s.note}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-y border-line-2 bg-sand" aria-labelledby="points-titre">
+    <div class="wrap section-y grid-fit items-start gap-[clamp(24px,3vw,48px)]" style="--min:300px">
+      <div class="flex flex-col gap-[18px]">
+        <span class="eyebrow">Toujours compris</span>
+        <h2 id="points-titre" class="h2-sm">Les points qui font tenir une étanchéité</h2>
+        <ul class="list-rule">
+          <li><strong>Diagnostic du support</strong> — état du béton ou du bois, humidité résiduelle, pente réelle.</li>
+          <li><strong>Relevés périphériques</strong> — remontées en pied de mur et en acrotère, la cause la plus fréquente d'infiltration.</li>
+          <li><strong>Évacuations</strong> — naissances, crapaudines et trop-pleins dimensionnés et dégagés.</li>
+          <li><strong>Traversées</strong> — sorties de VMC, gaines et platines soigneusement traitées.</li>
+        </ul>
+      </div>
+      <!-- Remplacer par la grille de 4 vignettes photo dès réception des photos. -->
+      <div class="flex flex-col gap-4 rounded-[20px] border border-line bg-white p-[clamp(24px,3vw,36px)] shadow-card">
+        <h3 class="text-[clamp(21px,2.2vw,26px)] font-bold tracking-[-0.02em]">Une infiltration sous votre terrasse ?</h3>
+        <p class="text-base leading-normal text-ink-6">
+          Nous localisons l'origine de la fuite — relevé, évacuation ou traversée — avant de proposer une reprise
+          ponctuelle ou une réfection complète. Diagnostic et devis gratuits.
+        </p>
+        <a href={site.phoneHref} class="btn btn-navy w-max px-[22px] py-[15px] text-base">
+          Appeler le {site.phone}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <RelatedGuides service="etancheite" />
+
+  <VideoFeature
+    id="video-titre"
+    title="Imperméabiliser une toiture, en vidéo"
+    text="Projection d'une résine hydrofuge sur une couverture en tuiles : elle pénètre le support et forme une protection qui laisse ruisseler l'eau de pluie au lieu de la laisser s'infiltrer."
+    pills={["Support nettoyé et sec", "Application tuile par tuile", "Eau de pluie qui ruisselle"]}
+    video={{
+      src: "/videos/resine-hydrofuge-application.mp4",
+      poster: "/videos/resine-hydrofuge-application.webp",
+      title: "Application de résine colorée hydrofuge sur une toiture en tuiles",
+      caption: "Projection de la résine hydrofuge",
+    }}
+  />
+
+  <Faq items={faq} title="Étanchéité : vos questions" />
+  <OtherServices current="etancheite" />
+</BaseLayout>

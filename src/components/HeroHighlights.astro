@@ -1,0 +1,36 @@
+---
+/**
+ * Encadré affiché dans le hero tant qu'aucune photo de chantier n'est disponible
+ * pour la page (isolation, étanchéité). Remplacer par une <Photo> dès réception.
+ */
+interface Props {
+  title: string;
+  items: string[];
+}
+const { title, items } = Astro.props;
+---
+
+<aside
+  class="highlights flex flex-col gap-5 rounded-[20px] border border-white/10 bg-navy-950 p-[clamp(24px,3vw,40px)] text-white shadow-hero"
+>
+  <p class="font-display text-[12.5px] font-bold tracking-[0.2em] text-on-navy-2 uppercase">{title}</p>
+  <ul class="flex flex-col gap-4">
+    {
+      items.map((it, i) => (
+        <li style={`--i:${i}`} class="flex gap-3.5 text-[17px] leading-snug text-on-navy">
+          <svg
+            viewBox="0 0 20 20"
+            class="mt-0.5 size-5 flex-none text-accent"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            aria-hidden="true"
+          >
+            <path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>{it}</span>
+        </li>
+      ))
+    }
+  </ul>
+</aside>

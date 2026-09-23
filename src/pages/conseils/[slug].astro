@@ -1,0 +1,103 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import RelatedGuides from "@/components/RelatedGuides.astro";
+import ServiceIcon from "@/components/ServiceIcon.astro";
+import { getGuides, guideHref, readingTime, serviceOf, formatDate, type Guide } from "@/data/conseils";
+import { articleSchema } from "@/data/schema";
+import { site } from "@/data/site";
+
+export async function getStaticPaths() {
+  const guides = await getGuides();
+  return guides.map((guide) => ({ params: { slug: guide.id }, props: { guide } }));
+}
+
+const { guide } = Astro.props as { guide: Guide };
+const { Content, headings } = await render(guide);
+const d = guide.data;
+const href = guideHref(guide);
+const service = serviceOf(guide);
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<BaseLayout
+  title={`${d.title} | RAGOT Couvreur Pro`}
+  description={d.description}
+  breadcrumbs={[
+    { name: "Conseils", href: "/conseils/" },
+    { name: d.title, href },
+  ]}
+  schema={[articleSchema(Astro.site!, { title: d.title, description: d.description, href, date: d.date, updated: d.updated })]}
+>
+  <section class="hero-bg on-dark text-white">
+    <div class="intro wrap flex flex-col gap-5 pt-[clamp(28px,3.4vw,52px)] pb-[clamp(40px,5vw,72px)]">
+      <nav aria-label="Fil d'Ariane">
+        <ol class="flex flex-wrap gap-2 text-sm text-on-navy-2">
+          <li><a href="/" class="text-on-navy-2 hover:text-white">Accueil</a></li>
+          <li aria-hidden="true">/</li>
+          <li><a href="/conseils/" class="text-on-navy-2 hover:text-white">Conseils</a></li>
+        </ol>
+      </nav>
+      <h1 class="max-w-[20em] text-[clamp(30px,4vw,50px)] leading-[1.08] font-extrabold tracking-[-0.025em] text-balance">
+        {d.title}
+      </h1>
+      <p class="max-w-[40em] text-[clamp(17px,1.4vw,19px)] leading-normal text-on-navy">{d.description}</p>
+      <div class="flex flex-wrap items-center gap-2.5 text-sm text-on-navy-2">
+        <span class="pill flex items-center gap-2">
+          <ServiceIcon name={d.service} class="size-4" />
+          {service.label}
+        </span>
+        {d.seasons.map((s) => <span class="pill">{s}</span>)}
+        <span class="px-1">
+          <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time> · {readingTime(guide)} min de lecture
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap section-y grid items-start gap-[clamp(32px,5vw,72px)] lg:grid-cols-[minmax(0,1fr)_300px]">
+    <article class="prose">
+      <Content />
+    </article>
+
+    <aside class="flex flex-col gap-4 lg:sticky lg:top-[100px]" aria-label="Pour aller plus loin">
+      {
+        toc.length > 2 && (
+          <nav class="card-sm gap-2.5" aria-labelledby="toc-titre">
+            <h2 id="toc-titre" class="font-display text-sm font-extrabold tracking-[0.04em] text-brand">
+              DANS CE GUIDE
+            </h2>
+            <ol class="flex flex-col gap-2 text-[14.5px] leading-snug">
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`} class="text-ink-3 hover:text-accent">
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <div class="on-dark flex flex-col gap-3.5 rounded-[20px] bg-navy-900 p-6 text-white">
+        <h2 class="text-[19px] leading-snug font-bold">Un doute sur votre {d.service === "facade" ? "façade" : "toiture"} ?</h2>
+        <p class="text-[15px] leading-normal text-on-navy">Nous nous déplaçons gratuitement pour un diagnostic et un devis.</p>
+        <a href={`/contact/?travaux=${d.service}`} class="btn btn-red w-full px-5 py-[13px] text-[15.5px]">Demander un devis</a>
+        <a href={site.phoneHref} class="btn btn-outline w-full px-5 py-[13px] text-[15.5px]">{site.phone}</a>
+      </div>
+      <a href={service.href} class="card-sm group flex-row items-center gap-3 hover:border-lav-200">
+        <span class="flex size-10 flex-none items-center justify-center rounded-[11px] bg-lav-100 text-navy-800" aria-hidden="true">
+          <ServiceIcon name={d.service} class="size-[22px]" />
+        </span>
+        <span class="flex flex-col">
+          <span class="text-[13px] text-muted">Notre prestation</span>
+          <span class="font-display text-[15.5px] font-bold text-ink">{service.label}</span>
+        </span>
+      </a>
+    </aside>
+  </div>
+
+  <div class="border-t border-line-2 bg-sand">
+    <RelatedGuides service={d.service} exclude={guide.id} title="À lire aussi" />
+  </div>
+</BaseLayout>

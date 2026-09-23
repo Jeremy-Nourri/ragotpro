@@ -1,0 +1,57 @@
+---
+import type { ImageMetadata } from "astro";
+import Photo from "./Photo.astro";
+import { site } from "@/data/site";
+
+/** Hero des pages métier : fil d'Ariane + H1 + photo avant/après. */
+interface Props {
+  crumb: string;
+  title: string;
+  lead: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  caption?: string;
+  /** Clé de type de travaux pré-cochée sur /contact/ (ex. "isolation"). */
+  travaux?: string;
+}
+const { crumb, title, lead, image, imageAlt = "", caption, travaux } = Astro.props;
+const quoteHref = travaux ? `/contact/?travaux=${travaux}` : "/contact/";
+---
+
+<section class="hero-bg on-dark">
+  <div
+    class="wrap grid-fit items-center gap-[clamp(24px,3vw,52px)] pt-[clamp(28px,3.4vw,52px)] pb-[clamp(36px,4vw,64px)]"
+    style="--min:340px"
+  >
+    <div class="intro flex flex-col justify-center gap-[22px] py-[clamp(8px,2vw,28px)] text-white">
+      <nav aria-label="Fil d'Ariane">
+        <ol class="flex flex-wrap gap-2 text-sm text-on-navy-2">
+          <li><a href="/" class="text-on-navy-2 hover:text-white">Accueil</a></li>
+          <li aria-hidden="true">/</li>
+          <li><span aria-current="page" class="text-white">{crumb}</span></li>
+        </ol>
+      </nav>
+      <h1 class="text-[clamp(34px,4.6vw,58px)] leading-[1.05] font-extrabold tracking-[-0.025em] text-balance">
+        {title}
+      </h1>
+      <p class="max-w-[34em] text-[clamp(17px,1.5vw,20px)] leading-normal text-on-navy">{lead}</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href={site.phoneHref} class="btn btn-red">Prendre RDV — {site.phone}</a>
+        <a href={quoteHref} class="btn btn-outline">Devis en ligne</a>
+      </div>
+    </div>
+
+    {
+      image ? (
+        <figure class="hero-media overflow-hidden rounded-[20px] bg-navy-950 shadow-hero">
+          <Photo src={image} alt={imageAlt} variant="hero" priority />
+          {caption && (
+            <figcaption class="px-4 py-3 text-sm font-semibold text-on-navy">{caption}</figcaption>
+          )}
+        </figure>
+      ) : (
+        <slot name="aside" />
+      )
+    }
+  </div>
+</section>

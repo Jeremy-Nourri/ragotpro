@@ -1,0 +1,60 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+/**
+ * Photo responsive AVIF/WebP avec srcset.
+ * Les photos du client sont des montages avant/après : jamais recadrées (height:auto).
+ */
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** Image LCP (au-dessus de la ligne de flottaison) : chargement prioritaire. */
+  priority?: boolean;
+  variant?: "hero" | "heroWide" | "gallery" | "half";
+  class?: string;
+}
+
+const { src, alt, priority = false, variant = "gallery", class: className } = Astro.props;
+
+const presets = {
+  hero: {
+    widths: [480, 720, 960, 1280, 1600],
+    sizes: "(min-width: 1280px) 590px, (min-width: 760px) 48vw, 100vw",
+  },
+  /** Hero de l'accueil : la photo occupe ~57 % de la largeur. */
+  heroWide: {
+    widths: [480, 720, 960, 1280, 1600, 1920],
+    sizes: "(min-width: 1280px) 680px, (min-width: 1024px) 55vw, 100vw",
+  },
+  half: {
+    widths: [480, 720, 960, 1280],
+    sizes: "(min-width: 1280px) 590px, (min-width: 700px) 48vw, 100vw",
+  },
+  gallery: {
+    widths: [360, 540, 720, 960],
+    sizes: "(min-width: 1280px) 400px, (min-width: 900px) 32vw, (min-width: 600px) 48vw, 100vw",
+  },
+} as const;
+const { sizes } = presets[variant];
+const widths = presets[variant].widths.filter((w) => w <= src.width);
+// Le <img> de repli (JPEG) reprend la plus grande largeur utile, pas l'original de 4096 px.
+const width = Math.max(...widths);
+const height = Math.round((src.height / src.width) * width);
+---
+
+<Picture
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  widths={widths}
+  sizes={sizes}
+  formats={["avif", "webp"]}
+  fallbackFormat="jpg"
+  quality={70}
+  loading={priority ? "eager" : "lazy"}
+  decoding={priority ? "sync" : "async"}
+  fetchpriority={priority ? "high" : "auto"}
+  class:list={["block h-auto w-full", className]}
+/>

@@ -1,0 +1,90 @@
+---
+/**
+ * Vidéo verticale (format réseaux sociaux) servie depuis public/videos/.
+ * Muette et en boucle : lecture automatique quand elle est visible, pause quand elle sort de l'écran.
+ * Rien n'est téléchargé avant l'affichage (preload="none" + image d'aperçu).
+ * Pas de lecture automatique si l'utilisateur a demandé à réduire les animations ; le bouton reste disponible.
+ */
+interface Props {
+  src: string;
+  poster: string;
+  title: string;
+  caption?: string;
+  class?: string;
+}
+const { src, poster, title, caption, class: className } = Astro.props;
+---
+
+<figure class:list={["video-clip flex flex-col gap-2.5", className]} data-video-clip>
+  <div class="relative aspect-[478/850] overflow-hidden rounded-[18px] bg-navy-950 shadow-hero">
+    <video
+      class="block size-full object-cover"
+      src={src}
+      poster={poster}
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-label={title}
+      width="478"
+      height="850"
+    ></video>
+    <button
+      type="button"
+      class="video-toggle absolute right-3 bottom-3 flex size-11 items-center justify-center rounded-full bg-white/90 text-navy-900 shadow-lg backdrop-blur transition hover:bg-white"
+      aria-label={`Lire la vidéo : ${title}`}
+      data-label-play={`Lire la vidéo : ${title}`}
+      data-label-pause={`Mettre en pause la vidéo : ${title}`}
+    >
+      <svg class="icon-play size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"></path>
+      </svg>
+      <svg class="icon-pause hidden size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <rect x="6.5" y="5" width="4" height="14" rx="1"></rect>
+        <rect x="13.5" y="5" width="4" height="14" rx="1"></rect>
+      </svg>
+    </button>
+  </div>
+  {caption && <figcaption class="text-[14.5px] font-semibold text-on-navy">{caption}</figcaption>}
+</figure>
+
+<script>
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const clip of document.querySelectorAll<HTMLElement>("[data-video-clip]")) {
+    const video = clip.querySelector("video")!;
+    const button = clip.querySelector<HTMLButtonElement>(".video-toggle")!;
+    // Mis en pause par l'utilisateur : on ne relance plus automatiquement.
+    let userPaused = false;
+
+    const sync = () => {
+      const playing = !video.paused;
+      button.querySelector(".icon-play")!.classList.toggle("hidden", playing);
+      button.querySelector(".icon-pause")!.classList.toggle("hidden", !playing);
+      button.setAttribute("aria-label", (playing ? button.dataset.labelPause : button.dataset.labelPlay) ?? "");
+    };
+    video.addEventListener("play", sync);
+    video.addEventListener("pause", sync);
+
+    button.addEventListener("click", () => {
+      if (video.paused) {
+        userPaused = false;
+        video.play().catch(() => {});
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!reduce.matches && !userPaused) video.play().catch(() => {});
+        } else if (!video.paused) {
+          video.pause();
+        }
+      },
+      { threshold: 0.5 },
+    ).observe(video);
+  }
+</script>

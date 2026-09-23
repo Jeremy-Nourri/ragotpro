@@ -1,0 +1,25 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { site, services } from "@/data/site";
+---
+
+<BaseLayout title={`Page introuvable | ${site.name}`} description="Cette page n'existe pas ou a été déplacée." noindex>
+  <section class="hero-bg on-dark text-white">
+    <div class="intro wrap flex flex-col items-start gap-6 py-[clamp(56px,8vw,120px)]">
+      <span class="eyebrow text-on-navy-2">Erreur 404</span>
+      <h1 class="text-[clamp(34px,4.6vw,58px)] leading-[1.05] font-extrabold tracking-[-0.025em] text-balance">
+        Cette page s'est envolée comme une tuile.
+      </h1>
+      <p class="max-w-[34em] text-[clamp(17px,1.5vw,20px)] leading-normal text-on-navy">
+        Elle n'existe pas ou a été déplacée. Retrouvez nos prestations ci-dessous ou appelez-nous directement.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="btn btn-red">Retour à l'accueil</a>
+        <a href={site.phoneHref} class="btn btn-outline">{site.phone}</a>
+      </div>
+      <ul class="flex flex-wrap gap-2.5 pt-2">
+        {services.map((s) => <li><a href={s.href} class="pill hover:text-white">{s.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
